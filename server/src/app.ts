@@ -6,6 +6,15 @@ import morgan from "morgan";
 
 export const app = express();
 
-app.use(morgan("dev")); // request logger   
+app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cors());
+
+app
+  .use(morgan("dev")) // request logger
+  .use(express.urlencoded({ extended: true }))
+  .use(express.json())
+  .use(cors())
+  .use(helmet())
+  .use(compression());
