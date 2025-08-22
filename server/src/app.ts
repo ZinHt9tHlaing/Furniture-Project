@@ -1,4 +1,4 @@
-import express, { Response } from "express";
+import express, { NextFunction, Response } from "express";
 import helmet from "helmet";
 import compression from "compression";
 import cors from "cors";
@@ -27,4 +27,13 @@ app.get("/", checkMiddleware, (req: CustomRequest, res: Response) => {
     message: "Hello we are ready for sending response",
     userId: req.userId,
   });
+});
+
+app.use((error: any, req: CustomRequest, res: Response, next: NextFunction) => {
+  const status = error.status || 500;
+  const message = error.message || "Server Error";
+  const errorCode = error.code || "Error_Code";
+
+  res.status(status).json({ message, error: errorCode });
+  next();
 });
