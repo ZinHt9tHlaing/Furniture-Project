@@ -3,6 +3,7 @@ import helmet from "helmet";
 import compression from "compression";
 import cors from "cors";
 import morgan from "morgan";
+import { limiter } from "./middlewares/rateLimiter";
 
 export const app = express();
 
@@ -17,4 +18,9 @@ app
   .use(express.json())
   .use(cors())
   .use(helmet())
-  .use(compression());
+  .use(compression())
+  .use(limiter);
+
+app.get("/", (req, res) => {
+  res.status(200).json("Hello World!");
+});
