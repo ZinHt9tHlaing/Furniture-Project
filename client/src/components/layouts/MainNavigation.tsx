@@ -38,14 +38,14 @@ const MainNavigation = ({ items }: MainNavigationProps) => {
                   <li className="row-span-3">
                     <NavigationMenuLink asChild>
                       <Link
-                        className="flex size-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                        className="from-muted/50 to-muted flex size-full flex-col justify-end rounded-md bg-gradient-to-b p-6 no-underline outline-none select-none focus:shadow-md"
                         to="/"
                       >
                         <Icons.logo className="siz-6" aria-hidden="true" />
-                        <div className="mb-2 mt-4 text-lg font-medium">
+                        <div className="mt-4 mb-2 text-lg font-medium">
                           {siteConfig.name}
                         </div>
-                        <p className="text-sm leading-tight text-muted-foreground">
+                        <p className="text-muted-foreground text-sm leading-tight">
                           {siteConfig.description}
                         </p>
                       </Link>
@@ -61,14 +61,15 @@ const MainNavigation = ({ items }: MainNavigationProps) => {
             </NavigationMenuItem>
           )}
           {items?.[0]?.menu &&
-            items[0].menu.map((item) => (
-              <NavigationMenuItem key={item.title}>
-                <Link to={String(item.href)}>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    {item.title}
-                  </NavigationMenuLink>
+            items[0].menu.map((item, index) => (
+              <NavigationMenuLink asChild key={index}>
+                <Link
+                  to={String(item.href)}
+                  className={navigationMenuTriggerStyle()}
+                >
+                  {item.title}
                 </Link>
-              </NavigationMenuItem>
+              </NavigationMenuLink>
             ))}
         </NavigationMenuList>
       </NavigationMenu>
@@ -87,13 +88,13 @@ const ListItem = React.forwardRef<
           ref={ref}
           to={String(href)}
           className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-            className
+            "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground block space-y-1 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none",
+            className,
           )}
           {...props}
         >
-          <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+          <div className="text-sm leading-none font-medium">{title}</div>
+          <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
             {children}
           </p>
         </Link>
