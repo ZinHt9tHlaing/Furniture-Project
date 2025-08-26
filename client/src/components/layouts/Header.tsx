@@ -7,7 +7,7 @@ const Header = () => {
     <header className="w-full border-b">
       <nav className="container flex items-center h-16 mx-auto">
         <MainNavigation items={siteConfig.mainNav} />
-        <MobileNavigation />
+        <MobileNavigation items={siteConfig.mainNav} />
       </nav>
     </header>
   );

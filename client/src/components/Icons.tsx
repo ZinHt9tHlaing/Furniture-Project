@@ -1,20 +1,5 @@
-import {
-  HomeIcon,
-  HamburgerMenuIcon,
-  PaperPlaneIcon,
-  ExclamationTriangleIcon,
-  ArrowLeftIcon,
-  LayersIcon,
-  PlusIcon,
-  MinusIcon,
-  StarIcon,
-  HeartIcon,
-  HeartFilledIcon,
-  DashboardIcon,
-  GearIcon,
-  ExitIcon,
-  TrashIcon,
-} from "@radix-ui/react-icons";
+import { HomeIcon } from "@radix-ui/react-icons";
+import { AlignLeft } from "lucide-react";
 
 export type IconProps = React.HTMLAttributes<SVGElement>;
 
@@ -36,4 +21,5 @@ export const Icons = {
     </svg>
   ),
   home: HomeIcon,
+  menu: AlignLeft,
 };
