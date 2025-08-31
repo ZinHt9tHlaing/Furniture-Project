@@ -1,8 +1,9 @@
+import { useParams } from "react-router";
 
 const BlogDetail = () => {
-  return (
-    <div>BlogDetail</div>
-  )
-}
+  const { postId } = useParams();
 
-export default BlogDetail
+  return <div>BlogDetail : {postId}</div>;
+};
+
+export default BlogDetail;

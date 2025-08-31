@@ -1,4 +1,4 @@
-import { HomeIcon } from "@radix-ui/react-icons";
+import { ExclamationTriangleIcon, HomeIcon } from "@radix-ui/react-icons";
 import { AlignLeft } from "lucide-react";
 
 export type IconProps = React.HTMLAttributes<SVGElement>;
@@ -22,4 +22,5 @@ export const Icons = {
   ),
   home: HomeIcon,
   menu: AlignLeft,
+  exclamation: ExclamationTriangleIcon,
 };

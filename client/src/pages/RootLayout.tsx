@@ -1,3 +1,4 @@
+import Footer from "@/components/layouts/Footer";
 import Header from "@/components/layouts/Header";
 import { Outlet } from "react-router-dom";
 
@@ -8,6 +9,7 @@ const RootLayout = () => {
       <main className="mt-16 flex-1">
         <Outlet />
       </main>
+      <Footer />
     </div>
   );
 };
