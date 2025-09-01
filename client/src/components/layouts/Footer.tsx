@@ -4,8 +4,8 @@ import { siteConfig } from "@/config/site";
 
 const Footer = () => {
   return (
-    <footer className="w-full border-t">
-      <div className="container mx-auto">
+    <footer className="ml-4 w-full border-t md:ml-0">
+      <div className="container mx-auto pt-6 pb-8 lg:gap-20">
         <section className="flex flex-col gap-10 md:flex-row md:gap-20">
           <section className="">
             <Link to={"/"} className="flex items-center space-x-2">
@@ -15,7 +15,25 @@ const Footer = () => {
             </Link>
           </section>
           <section className="grid grid-cols-2 gap-10 md:grid-cols-4 lg:grid-cols-4">
-            Loop Menu
+            {siteConfig.footerNav.map((foot, index) => (
+              <div key={index} className="space-y-3">
+                <h4 className="font-semibold">{foot.title}</h4>
+                <ul className="">
+                  {foot.items.map((item, index) => (
+                    <li key={index}>
+                      <Link
+                        to={item.href}
+                        target={item.external ? "_blank" : "_self"}
+                        className="text-muted-foreground hover:text-foreground text-sm hover:font-medium"
+                      >
+                        {item.title}
+                        <span className="sr-only">{item.title}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </section>
         </section>
       </div>
