@@ -1,5 +1,19 @@
-import { ExclamationTriangleIcon, HomeIcon } from "@radix-ui/react-icons";
-import { AlignLeft } from "lucide-react";
+import {
+  HomeIcon,
+  ExclamationTriangleIcon,
+  ArrowLeftIcon,
+  LayersIcon,
+  PlusIcon,
+  MinusIcon,
+  StarIcon,
+  HeartIcon,
+  HeartFilledIcon,
+  DashboardIcon,
+  GearIcon,
+  ExitIcon,
+  TrashIcon,
+} from "@radix-ui/react-icons";
+import { AlignLeft, SendHorizontal } from "lucide-react";
 
 export type IconProps = React.HTMLAttributes<SVGElement>;
 
@@ -22,5 +36,17 @@ export const Icons = {
   ),
   home: HomeIcon,
   menu: AlignLeft,
+  paperPlane: SendHorizontal,
   exclamation: ExclamationTriangleIcon,
+  arrowLeft: ArrowLeftIcon,
+  layers: LayersIcon,
+  plus: PlusIcon,
+  minus: MinusIcon,
+  star: StarIcon,
+  heart: HeartIcon,
+  heartFill: HeartFilledIcon,
+  dashboard: DashboardIcon,
+  gear: GearIcon,
+  exit: ExitIcon,
+  trash: TrashIcon,
 };
