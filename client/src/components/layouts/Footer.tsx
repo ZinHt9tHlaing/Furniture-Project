@@ -36,7 +36,7 @@ const Footer = () => {
               </div>
             ))}
           </section>
-          <section className="">
+          <section className="space-y-3">
             <h4 className="font-medium">Subscribe to our newsLetter</h4>
             <NewLetterForm />
           </section>
