@@ -6,10 +6,10 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
+  // SheetDescription,
+  // SheetFooter,
+  // SheetHeader,
+  // SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -21,12 +21,31 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useEffect, useState } from "react";
 
 interface MainNavigationProps {
   items?: MainNavItem[];
 }
 
 const MobileNavigation = ({ items }: MainNavigationProps) => {
+  const [isDesktop, setIsDesktop] = useState<boolean>(false);
+
+  const query = "(min-width: 1024px)";
+  
+  // check if the screen size is larger than 1024px
+  useEffect(() => {
+    const onChangeHandler = (event: MediaQueryListEvent) => {
+      setIsDesktop(event.matches);
+    };
+
+    const result = matchMedia(query);
+    result.addEventListener("change", onChangeHandler);
+    // clean up the event listener
+    return () => result.removeEventListener("change", onChangeHandler);
+  }, [query]);
+
+  if (isDesktop) return null;
+
   return (
     <div className="lg:hidden">
       <Sheet>
@@ -34,7 +53,7 @@ const MobileNavigation = ({ items }: MainNavigationProps) => {
           <Button
             variant="ghost"
             size={"icon"}
-            className="ml-4 size-5 duration-200 active:scale-90"
+            className="ml-4 size-5 cursor-pointer duration-200 active:scale-90"
           >
             <Icons.menu aria-hidden="true" />
             {/* sr => screen reader */}

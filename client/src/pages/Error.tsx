@@ -13,31 +13,36 @@ import Footer from "@/components/layouts/Footer";
 
 export default function ErrorPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
+    <div className="flex min-h-screen flex-col overflow-hidden">
       <Header />
-      <Card className="w-[350px] max-w-md rounded-2xl shadow-lg md:w-[500px] lg:w-[500px]">
-        <CardHeader className="flex flex-col items-center">
-          <Icons.exclamation className="mb-2 h-12 w-12 text-red-500" />
-          <CardTitle className="text-center text-2xl font-bold">
-            Page Not Found
-          </CardTitle>
-        </CardHeader>
+      <main className="mx-auto my-32 flex flex-1 items-center">
+        <Card className="w-[350px] max-w-md rounded-2xl shadow-lg md:w-[500px] lg:w-[500px]">
+          <CardHeader className="flex flex-col items-center">
+            <Icons.exclamation
+              className="mb-2 size-12 text-red-500"
+              aria-hidden="true"
+            />
+            <CardTitle className="text-center text-2xl font-bold">
+              Page Not Found
+            </CardTitle>
+          </CardHeader>
 
-        <CardContent>
-          <p className="text-center text-gray-600">
-            The page you’re looking for doesn’t exist or has been moved.
-          </p>
-        </CardContent>
+          <CardContent>
+            <p className="text-center text-gray-600">
+              The page you’re looking for doesn’t exist or has been moved.
+            </p>
+          </CardContent>
 
-        <CardFooter className="flex justify-center">
-          <Button
-            asChild
-            className="rounded-xl bg-red-500 shadow-md duration-200 hover:bg-red-600 active:scale-90"
-          >
-            <Link to="/">Go Back Home</Link>
-          </Button>
-        </CardFooter>
-      </Card>
+          <CardFooter className="flex justify-center">
+            <Button
+              asChild
+              className="rounded-xl bg-red-500 shadow-md duration-200 hover:bg-red-600 active:scale-90"
+            >
+              <Link to="/">Go Back Home</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+      </main>
       <Footer />
     </div>
   );
