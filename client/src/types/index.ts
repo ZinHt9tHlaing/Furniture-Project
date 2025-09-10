@@ -17,10 +17,10 @@ export type Image = {
 };
 
 export type Product = {
-  id: number;
+  id: string;
   name: string;
   description: string;
-  images: Image[];
+  images: string[];
   categoryId: string;
   price: number;
   discount: number;
