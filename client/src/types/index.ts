@@ -34,14 +34,12 @@ export type Tag = {
 };
 
 export type Post = {
-  id: number;
-  author: {
-    fullName: string;
-  };
+  id: string;
+  author: string;
   title: string;
   content: string;
   image: string;
   body: string;
-  updatedAt: string;
-  tags: Tag[];
+  updated_at: string;
+  tags: string[];
 };
