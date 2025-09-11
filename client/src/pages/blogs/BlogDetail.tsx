@@ -1,9 +1,59 @@
-import { useParams } from "react-router";
+import { Icons } from "@/components/Icons";
+import { Button } from "@/components/ui/button";
+import { posts } from "@/data/posts";
+import { useParams, Link } from "react-router-dom";
 
 const BlogDetail = () => {
   const { postId } = useParams();
 
-  return <div>BlogDetail : {postId}</div>;
+  const post = posts.find((post) => post.id === postId);
+
+  return (
+    <div className="container mx-auto px-4 lg:px-0">
+      <section className="flex flex-col lg:flex-row">
+        <section className="w-full lg:w-3/4 lg:pr-16">
+          <Button
+            variant={"outline"}
+            asChild
+            className="group mt-8 mb-6 duration-200 active:scale-90"
+          >
+            <Link to="/blogs">
+              <Icons.arrowLeft className="duration-200 group-hover:-translate-x-1" />
+              All Posts
+            </Link>
+          </Button>
+          {post ? (
+            <>
+              <h2 className="mb-3 text-3xl font-extrabold">{post.title}</h2>
+              <div className="text-sm">
+                <span>
+                  by<span className="font-[600]"> {post.author} </span>on
+                  <span className="font-[600]"> {post.updated_at}</span>
+                </span>
+              </div>
+              <h3 className="my-6 text-base font-[400]">{post.content}</h3>
+              <img
+                src={post.image}
+                alt={post.title}
+                className="w-full rounded-xl"
+              />
+              <p className="">{post.body}</p>
+              <div className="mb-12 space-x-2">
+                {post.tags.map((tag) => (
+                  <Button variant={"secondary"}>{tag}</Button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="text-muted-foreground mt-8 mb-16 text-center text-xl font-bold lg:mt-24">
+              No post found
+            </p>
+          )}
+        </section>
+        <section className="w-full lg:mt-24 lg:w-1/4">Other</section>
+      </section>
+    </div>
+  );
 };
 
 export default BlogDetail;
