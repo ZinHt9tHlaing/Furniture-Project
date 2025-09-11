@@ -5,9 +5,9 @@ import NewLetterForm from "../new-letter";
 
 const Footer = () => {
   return (
-    <footer className="ml-4 w-full border-t lg:ml-0">
+    <footer className="ml-4 w-full border-t lg:ml-0 md:px-0 lg:px-10">
       <div className="container mx-auto pt-6 pb-8 lg:py-6">
-        <section className="flex flex-col gap-10 lg:flex-row lg:gap-20 lg:justify-evenly">
+        <section className="flex flex-col gap-10 lg:flex-row lg:gap-20 lg:justify-between">
           <section className="">
             <Link to={"/"} className="flex items-center space-x-2">
               <Icons.logo className="size-6" aria-hidden="true" />

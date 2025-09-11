@@ -57,8 +57,8 @@ export default function CarouselCard({ products }: ProductProps) {
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      <CarouselPrevious className="mx-0 lg:mx-4" />
+      <CarouselNext className="mx-0 lg:mx-4" />
     </Carousel>
   );
 }
