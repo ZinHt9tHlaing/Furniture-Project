@@ -5,7 +5,7 @@ import { ModeToggle } from "../mode-toggle";
 
 const Header = () => {
   return (
-    <header className="bg-background fixed top-0 z-50 w-full md:px-0 lg:px-10 border-b">
+    <header className="bg-background fixed top-0 z-50 w-full md:px-0 lg:px-20 border-b">
       <nav className="container mx-auto flex h-16 items-center">
         <MainNavigation items={siteConfig.mainNav} />
         <MobileNavigation items={siteConfig.mainNav} />
