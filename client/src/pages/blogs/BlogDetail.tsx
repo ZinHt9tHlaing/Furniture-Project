@@ -51,7 +51,32 @@ const BlogDetail = () => {
             </p>
           )}
         </section>
-        <section className="w-full lg:mt-24 lg:w-1/4">Other</section>
+        {/* other blog posts */}
+        <section className="w-full lg:mt-24 lg:w-1/4">
+          <div className="mb-8 flex items-center gap-4 text-base font-semibold">
+            <Icons.layers />
+            <h3 className="">Other Blog Posts</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
+            {posts.map((post) => (
+              <Link
+                to={`/blogs/${post.id}`}
+                key={post.id}
+                className="mb-6 flex items-start gap-2"
+              >
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  className="w-1/4 rounded"
+                />
+                <div className="text-muted-foreground w-3/4 text-sm font-[500]">
+                  <p className="line-clamp-2">{post.content}</p>
+                  <i>... see more</i>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
       </section>
     </div>
   );
