@@ -1,3 +1,4 @@
+import RichTextRenderer from "@/components/blogs/RichTextRenderer";
 import { Icons } from "@/components/Icons";
 import { Button } from "@/components/ui/button";
 import { posts } from "@/data/posts";
@@ -37,7 +38,7 @@ const BlogDetail = () => {
                 alt={post.title}
                 className="w-full rounded-xl"
               />
-              <p className="">{post.body}</p>
+              <RichTextRenderer content={post.body} className="my-8" />
               <div className="mb-12 space-x-2">
                 {post.tags.map((tag) => (
                   <Button variant={"secondary"}>{tag}</Button>
