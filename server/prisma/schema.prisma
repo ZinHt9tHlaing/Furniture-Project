@@ -136,4 +136,14 @@ model ProductsOnOrders {
   product   Product @relation(fields: [productId], references: [id])
 }
 
-
+model Otp {
+  id            Int      @id @default(autoincrement())
+  phone         String   @unique @db.VarChar(15)
+  otp           String
+  rememberToken String
+  verifyToken   String?
+  count         Int      @default(0) @db.SmallInt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  error         Int      @default(0) @db.SmallInt
+}
