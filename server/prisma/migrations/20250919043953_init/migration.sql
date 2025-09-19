@@ -70,7 +70,7 @@ CREATE TABLE "public"."User" (
     "lastName" VARCHAR(52),
     "phone" VARCHAR(15) NOT NULL,
     "password" TEXT NOT NULL,
-    "email" VARCHAR(52) NOT NULL,
+    "email" VARCHAR(52),
     "role" "public"."Role" NOT NULL DEFAULT 'USER',
     "status" "public"."Status" NOT NULL DEFAULT 'ACTIVE',
     "lastLogin" TIMESTAMP(3),
@@ -124,8 +124,26 @@ CREATE TABLE "public"."ProductsOnOrders" (
     CONSTRAINT "ProductsOnOrders_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "public"."Otp" (
+    "id" SERIAL NOT NULL,
+    "phone" VARCHAR(15) NOT NULL,
+    "otp" TEXT NOT NULL,
+    "rememberToken" TEXT NOT NULL,
+    "verifyToken" TEXT,
+    "count" SMALLINT NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "error" SMALLINT NOT NULL DEFAULT 0,
+
+    CONSTRAINT "Otp_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "public"."User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Otp_phone_key" ON "public"."Otp"("phone");
 
 -- AddForeignKey
 ALTER TABLE "public"."Post" ADD CONSTRAINT "Post_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
