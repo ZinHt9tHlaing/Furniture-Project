@@ -14,11 +14,12 @@ type TitleProps = {
 };
 
 const samplePosts = posts.slice(0, 3);
+const sampleProducts = products.slice(0, 4);
 
 const Home = () => {
   // Reusable Component
   const Title = ({ title, href, sideText }: TitleProps) => (
-    <div className="mt-28 mb-10 flex flex-col px-4 md:flex-row md:items-center md:justify-between md:px-0">
+    <div className="mt-28 mb-10 flex flex-col px-4 md:flex-row md:items-center md:justify-between lg:px-0">
       <h2 className="mb-4 text-2xl font-bold md:mb-0">{title}</h2>
       <Link
         to={String(href)}
@@ -67,7 +68,11 @@ const Home = () => {
         href="/products"
         sideText="View All Products"
       />
-      <ProductCard />
+      <div className="grid grid-cols-1 px-4 md:grid-cols-2 lg:px-0 lg:grid-cols-4 gap-6">
+        {sampleProducts.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </div>
 
       {/* Recent Blog  */}
       <Title title="Recent Blog" href="/blogs" sideText="View All Posts" />
