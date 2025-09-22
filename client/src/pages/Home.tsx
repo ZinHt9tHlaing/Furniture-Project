@@ -5,6 +5,7 @@ import CarouselCard from "@/components/products/CarouselCard";
 import { products } from "@/data/products";
 import BlogCard from "@/components/blogs/BlogCard";
 import { posts } from "@/data/posts";
+import ProductCard from "@/components/products/ProductCard";
 
 type TitleProps = {
   title: string;
@@ -60,7 +61,15 @@ const Home = () => {
         <img src={Couch} alt="Couch" className="w-full lg:w-3/5" />
       </div>
       <CarouselCard products={products} />
-      {/* Title Section  */}
+      {/* Featured Products */}
+      <Title
+        title="Featured Products"
+        href="/products"
+        sideText="View All Products"
+      />
+      <ProductCard />
+
+      {/* Recent Blog  */}
       <Title title="Recent Blog" href="/blogs" sideText="View All Posts" />
       <BlogCard posts={samplePosts} />
     </div>
