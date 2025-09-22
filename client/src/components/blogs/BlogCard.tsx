@@ -16,7 +16,7 @@ const BlogCard = ({ posts }: PostProps) => {
               alt={post.title}
               loading="lazy"
               decoding="async"
-              className="mb-4 w-full rounded-2xl"
+              className="mb-4 w-full rounded-2xl transition-all duration-500 ease-in-out lg:hover:scale-105"
             />
           </Link>
           <h3 className="ml-4 line-clamp-1 font-semibold">{post.title}</h3>

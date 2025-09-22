@@ -29,7 +29,7 @@ const ProductCard = ({ product }: ProductProps) => {
               alt="product image"
               loading="lazy"
               decoding="async"
-              className="size-full object-contain transition-all duration-500 ease-in-out hover:scale-110"
+              className="size-full object-contain transition-all duration-500 ease-in-out lg:hover:scale-105"
             />
           </AspectRatio>
         </CardHeader>
