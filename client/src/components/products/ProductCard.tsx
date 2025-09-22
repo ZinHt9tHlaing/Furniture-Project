@@ -12,6 +12,7 @@ import {
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Link } from "react-router-dom";
 import { Icons } from "../Icons";
+import { formatPrice } from "@/lib/utils";
 
 interface ProductProps {
   product: Product;
@@ -37,10 +38,10 @@ const ProductCard = ({ product }: ProductProps) => {
       <CardContent className="space-y-1.5 p-4">
         <CardTitle className="line-clamp-1">{product.name}</CardTitle>
         <CardDescription className="line-clamp-1">
-          ${product.price}
+          {formatPrice(product.price)}
           {product.discount > 0 && (
-            <span className="ml-2 font-extralight line-through">
-              ${product.discount}
+            <span className="ml-2 font-light line-through">
+              {formatPrice(product.discount)}
             </span>
           )}
         </CardDescription>
@@ -60,7 +61,7 @@ const ProductCard = ({ product }: ProductProps) => {
           <Button
             aria-label="Add to cart"
             size={"sm"}
-            className="bg-own h-8 w-full text-center cursor-pointer rounded-sm font-bold duration-200 active:scale-95"
+            className="bg-own h-8 w-full cursor-pointer rounded-sm text-center font-bold duration-200 active:scale-95"
           >
             <Icons.plus className="mr-2" /> Add to cart
           </Button>
