@@ -61,7 +61,7 @@ const ProductCard = ({ product }: ProductProps) => {
           <Button
             aria-label="Add to cart"
             size={"sm"}
-            className="bg-own h-8 w-full cursor-pointer rounded-sm text-center font-bold duration-200 active:scale-95"
+            className="bg-own h-8 w-full cursor-pointer rounded-sm text-center font-bold duration-200 active:scale-95 dark:text-white hover:bg-emerald-900"
           >
             <Icons.plus className="mr-2" /> Add to cart
           </Button>

@@ -9,13 +9,9 @@ const Product = () => {
       <section className="flex flex-col lg:flex-row">
         <section className="my-8 ml-4 w-full lg:ml-0 lg:w-1/5">
           <ProductFilter
-            title="Furniture Made By"
-            filterList={filterList.categories}
+            filterList={filterList}
           />
-          <ProductFilter
-            title="Furniture Types"
-            filterList={filterList.types}
-          />
+          
         </section>
         <section className="w-full lg:ml-0 lg:w-4/5">
           <h1 className="my-8 ml-4 text-2xl font-bold">All Products</h1>

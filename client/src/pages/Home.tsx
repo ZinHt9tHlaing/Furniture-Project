@@ -23,7 +23,7 @@ const Home = () => {
       <h2 className="mb-4 text-2xl font-bold md:mb-0">{title}</h2>
       <Link
         to={String(href)}
-        className="text-muted-foreground font-semibold underline duration-200 md:active:scale-90"
+        className="text-muted-foreground font-semibold underline duration-200 hover:scale-105 md:active:scale-100"
       >
         {sideText}
       </Link>
@@ -68,7 +68,7 @@ const Home = () => {
         href="/products"
         sideText="View All Products"
       />
-      <div className="grid grid-cols-1 px-4 md:grid-cols-2 lg:px-0 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 px-4 md:grid-cols-2 lg:grid-cols-4 lg:px-0">
         {sampleProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
