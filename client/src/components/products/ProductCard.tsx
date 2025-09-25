@@ -12,15 +12,15 @@ import {
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Link } from "react-router-dom";
 import { Icons } from "../Icons";
-import { formatPrice } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 
-interface ProductProps {
+interface ProductProps extends React.HTMLAttributes<HTMLDivElement> {
   product: Product;
 }
 
-const ProductCard = ({ product }: ProductProps) => {
+const ProductCard = ({ product, className }: ProductProps) => {
   return (
-    <Card className="size-full overflow-hidden rounded-lg">
+    <Card className={cn("size-full overflow-hidden rounded-lg", className)}>
       <Link to={`/products/${product.id}`} aria-label={product.name}>
         <CardHeader className="gap-0 border-b p-0">
           <AspectRatio ratio={1 / 1} className="bg-muted">
@@ -61,7 +61,7 @@ const ProductCard = ({ product }: ProductProps) => {
           <Button
             aria-label="Add to cart"
             size={"sm"}
-            className="bg-own h-8 w-full cursor-pointer rounded-sm text-center font-bold duration-200 active:scale-95 dark:text-white hover:bg-emerald-900"
+            className="bg-own h-8 w-full cursor-pointer rounded-sm text-center font-bold duration-200 hover:bg-emerald-900 active:scale-95 dark:text-white"
           >
             <Icons.plus className="mr-2" /> Add to cart
           </Button>

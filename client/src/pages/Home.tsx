@@ -23,7 +23,7 @@ const Home = () => {
       <h2 className="mb-4 text-2xl font-bold md:mb-0">{title}</h2>
       <Link
         to={String(href)}
-        className="text-muted-foreground font-semibold underline duration-200 hover:scale-105 md:active:scale-100"
+        className="text-muted-foreground font-semibold underline duration-200 lg:hover:scale-105 md:active:scale-100"
       >
         {sideText}
       </Link>
