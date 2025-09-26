@@ -19,6 +19,13 @@ import Rating from "@/components/products/Rating";
 import AddToFavorite from "@/components/products/AddToFavorite";
 import AddToCartForm from "@/components/products/AddToCartForm";
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
 const ProductDetail = () => {
   const { productId } = useParams();
 
@@ -75,7 +82,19 @@ const ProductDetail = () => {
               rating={Number(product?.rating)}
             />
           </div>
-          <AddToCartForm canBuy={product?.status === "active" ? true : false} />
+          <AddToCartForm canBuy={product?.status === "active"} />
+
+          <Separator className="my-5" />
+
+          <Accordion type="single" collapsible>
+            <AccordionItem value="item-1" className="border-none">
+              <AccordionTrigger>Description</AccordionTrigger>
+              <AccordionContent>
+                {product?.description ??
+                  "No description is available for this product."}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       </section>
 
