@@ -3,16 +3,23 @@ import HomePage from "./pages/Home";
 import RootLayout from "./pages/RootLayout";
 import AboutPage from "./pages/About";
 import ErrorPage from "./pages/Error";
+import { lazy, Suspense } from "react";
 
 // Blogs
-import BlogPage from "./pages/blogs/Blog";
-import BlogDetailPage from "./pages/blogs/BlogDetail";
-import BlogRootLayoutPage from "./pages/blogs/BlogRootLayout";
+// import BlogPage from "./pages/blogs/Blog";
+// import BlogDetailPage from "./pages/blogs/BlogDetail";
+// import BlogRootLayoutPage from "./pages/blogs/BlogRootLayout";
+
+// Blogs lazy loading
+const BlogRootLayoutPage = lazy(() => import("./pages/blogs/BlogRootLayout"));
+const BlogPage = lazy(() => import("./pages/blogs/Blog"));
+const BlogDetailPage = lazy(() => import("./pages/blogs/BlogDetail"));
 
 // Products
 import ProductRootLayoutPage from "./pages/products/ProductRootLayout";
 import ProductPage from "./pages/products/Product";
 import ProductDetailPage from "./pages/products/ProductDetail";
+import SuspenseFallback from "./components/loading/SuspenseFallback";
 
 export const router = createBrowserRouter([
   {
@@ -30,15 +37,27 @@ export const router = createBrowserRouter([
       },
       {
         path: "blogs",
-        element: <BlogRootLayoutPage />,
+        element: (
+          <Suspense fallback={<SuspenseFallback />}>
+            <BlogRootLayoutPage />
+          </Suspense>
+        ),
         children: [
           {
             index: true,
-            element: <BlogPage />,
+            element: (
+              <Suspense fallback={<SuspenseFallback />}>
+                <BlogPage />
+              </Suspense>
+            ),
           },
           {
             path: ":postId",
-            element: <BlogDetailPage />,
+            element: (
+              <Suspense fallback={<SuspenseFallback />}>
+                <BlogDetailPage />
+              </Suspense>
+            ),
           },
         ],
       },
