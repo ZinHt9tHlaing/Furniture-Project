@@ -48,3 +48,27 @@ export type Category = {
   id: string;
   label: string;
 };
+
+export type User = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+  imageUrl: string;
+};
+
+export type Cart = {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+  image: string;
+  // image: {
+  //   id: string;
+  //   name: string;
+  //   url: string;
+  // };
+  // category: string;
+  // subcategory: string;
+};
