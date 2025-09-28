@@ -59,16 +59,16 @@ export type User = {
 };
 
 export type Cart = {
-  id: number;
+  id: string;
   name: string;
   price: number;
   quantity: number;
-  image: string;
-  // image: {
-  //   id: string;
-  //   name: string;
-  //   url: string;
-  // };
-  // category: string;
-  // subcategory: string;
+  // image: string;
+  image: {
+    id: string;
+    name: string;
+    url: string;
+  };
+  category: string;
+  subcategory: string;
 };
