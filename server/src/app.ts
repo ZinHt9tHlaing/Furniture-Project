@@ -8,8 +8,14 @@ import { checkMiddleware, CustomRequest } from "./middlewares/check";
 
 // routes imports
 import testRoutes from "./routes/v1/testRoutes";
+import viewRoutes from "./routes/v1/web/viewRoute";
+import * as errorController from "./controllers/web/errorController";
 
 export const app = express();
+
+// view engine
+app.set("view engine", "ejs");
+app.set("views", "src/views"); // set the views directory
 
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
@@ -26,8 +32,15 @@ app
   .use(compression())
   .use(limiter);
 
+// static
+app.use(express.static("public"));
+
 // routes
 app.use("/api/v1", testRoutes);
+
+// view routes
+app.use(viewRoutes);
+app.use(errorController.notFound);
 
 app.use((error: any, req: CustomRequest, res: Response, next: NextFunction) => {
   const status = error.status || 500;
