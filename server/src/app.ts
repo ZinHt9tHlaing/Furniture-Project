@@ -8,6 +8,9 @@ import { checkMiddleware, CustomRequest } from "./middlewares/check";
 
 // routes imports
 import testRoutes from "./routes/v1/testRoutes";
+import authRoutes from "./routes/v1/auth/authRoute";
+
+// view routes
 import viewRoutes from "./routes/v1/web/viewRoute";
 import * as errorController from "./controllers/web/errorController";
 
@@ -37,10 +40,12 @@ app.use(express.static("public"));
 
 // routes
 app.use("/api/v1", testRoutes);
+app.use("/api/v1", authRoutes);
 
 // view routes
 app.use(viewRoutes);
-app.use(errorController.notFound);
+// error view routes
+// app.use(errorController.notFound);
 
 app.use((error: any, req: CustomRequest, res: Response, next: NextFunction) => {
   const status = error.status || 500;
