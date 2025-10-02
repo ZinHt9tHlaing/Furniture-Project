@@ -1,8 +1,9 @@
-import { log } from "console";
+import { count, log } from "console";
 import { Request, Response, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
-import { getUserByPhone } from "../../services/authServices";
+import { createOtp, getUserByPhone } from "../../services/authServices";
 import { checkUserExist } from "../../utils/auth";
+import { generateOTP, generateToken } from "../../utils/generate";
 
 export const registerController = [
   body("phone", "Invalid phone number")
@@ -28,7 +29,25 @@ export const registerController = [
     const user = await getUserByPhone(phone);
     checkUserExist(user);
 
-    res.status(200).json({ message: phone });
+    // OTP sending logic here
+    // Generate OTP & call OTP sending API
+    // if sms OTP cannot be sent, response error
+    // Save OTP in DB
+    const otp = generateOTP();
+    const token = generateToken();
+    const otpData = {
+      phone,
+      otp: otp.toString(),
+      rememberToken: token,
+      count: 1,
+    };
+    const result = await createOtp(otpData);
+
+    res.status(200).json({
+      message: `OTP has been sent to 09${result.phone}`,
+      phone: result.phone,
+      token: result.rememberToken,
+    });
   },
 ];
 
