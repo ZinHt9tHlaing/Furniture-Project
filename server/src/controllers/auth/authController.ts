@@ -1,9 +1,9 @@
-import { count, log } from "console";
 import { Request, Response, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
 import { createOtp, getUserByPhone } from "../../services/authServices";
 import { checkUserExist } from "../../utils/auth";
 import { generateOTP, generateToken } from "../../utils/generate";
+import bcrypt from "bcrypt";
 
 export const registerController = [
   body("phone", "Invalid phone number")
@@ -34,10 +34,14 @@ export const registerController = [
     // if sms OTP cannot be sent, response error
     // Save OTP in DB
     const otp = generateOTP();
+    const salt = await bcrypt.genSalt(10);
+    const hashedOtp = await bcrypt.hash(otp.toString(), salt);
+
     const token = generateToken();
+
     const otpData = {
       phone,
-      otp: otp.toString(),
+      otp: hashedOtp,
       rememberToken: token,
       count: 1,
     };
