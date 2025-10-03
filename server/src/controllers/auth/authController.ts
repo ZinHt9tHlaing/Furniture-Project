@@ -1,7 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
-import { createOtp, getUserByPhone } from "../../services/authServices";
-import { checkUserExist } from "../../utils/auth";
+import {
+  createOtp,
+  getUserByPhone,
+  getOtpByPhone,
+  updateOtp,
+} from "../../services/authServices";
+import { checkOtpErrorIfSameDate, checkUserExist } from "../../utils/auth";
 import { generateOTP, generateToken } from "../../utils/generate";
 import bcrypt from "bcrypt";
 
@@ -39,13 +44,53 @@ export const registerController = [
 
     const token = generateToken();
 
-    const otpData = {
-      phone,
-      otp: hashedOtp,
-      rememberToken: token,
-      count: 1,
-    };
-    const result = await createOtp(otpData);
+    const otpRow = await getOtpByPhone(phone);
+    let result;
+    if (!otpRow) {
+      // OTP does not exist in DB
+      const otpData = {
+        phone,
+        otp: hashedOtp,
+        rememberToken: token,
+        count: 1,
+      };
+      result = await createOtp(otpData);
+    } else {
+      const lastOtpRequestDate = new Date(
+        otpRow.updatedAt
+      ).toLocaleDateString();
+      const today = new Date().toLocaleDateString();
+      const isSameDate = lastOtpRequestDate === today;
+      checkOtpErrorIfSameDate(isSameDate, otpRow.error);
+
+      if (!isSameDate) {
+        const otpData = {
+          otp: hashedOtp,
+          rememberToken: token,
+          count: 1,
+          error: 0,
+        };
+        result = await updateOtp(otpRow.id, otpData);
+      } else {
+        if (otpRow.count === 3) {
+          const error: any = new Error(
+            "OTP is allowed to request 3 times per day."
+          );
+          error.status = 405;
+          error.code = "Error_OverLimit";
+          return next(error);
+        } else {
+          const otpData = {
+            otp: hashedOtp,
+            rememberToken: token,
+            count: {
+              increment: 1,
+            },
+          };
+          result = await updateOtp(otpRow.id, otpData);
+        }
+      }
+    }
 
     res.status(200).json({
       message: `OTP has been sent to 09${result.phone}`,
