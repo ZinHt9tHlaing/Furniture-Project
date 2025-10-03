@@ -19,6 +19,7 @@ export const registerController = [
   async (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req).array({ onlyFirstError: true });
 
+    // If validation error occurs
     if (errors.length > 0) {
       const error: any = new Error(errors[0].msg);
       error.status = 400;
@@ -63,6 +64,7 @@ export const registerController = [
       const isSameDate = lastOtpRequestDate === today;
       checkOtpErrorIfSameDate(isSameDate, otpRow.error);
 
+      // If OTP request is not the same date
       if (!isSameDate) {
         const otpData = {
           otp: hashedOtp,
@@ -72,6 +74,7 @@ export const registerController = [
         };
         result = await updateOtp(otpRow.id, otpData);
       } else {
+        // If OTP request is not the same date and over limit
         if (otpRow.count === 3) {
           const error: any = new Error(
             "OTP is allowed to request 3 times per day."
@@ -80,6 +83,7 @@ export const registerController = [
           error.code = "Error_OverLimit";
           return next(error);
         } else {
+          // If OTP request is not the same date and not over limit
           const otpData = {
             otp: hashedOtp,
             rememberToken: token,
