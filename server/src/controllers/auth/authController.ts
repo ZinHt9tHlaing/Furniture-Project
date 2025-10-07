@@ -6,7 +6,11 @@ import {
   getOtpByPhone,
   updateOtp,
 } from "../../services/authServices";
-import { checkOtpErrorIfSameDate, checkUserExist } from "../../utils/auth";
+import {
+  checkOtpErrorIfSameDate,
+  checkOtpRow,
+  checkUserExist,
+} from "../../utils/auth";
 import { generateOTP, generateToken } from "../../utils/generate";
 import bcrypt from "bcrypt";
 
@@ -39,7 +43,9 @@ export const registerController = [
     // Generate OTP & call OTP sending API
     // if sms OTP cannot be sent, response error
     // Save OTP in DB
-    const otp = generateOTP();
+
+    const otp = 123456; // For testing
+    // const otp = generateOTP(); // For production user
     const salt = await bcrypt.genSalt(10);
     const hashedOtp = await bcrypt.hash(otp.toString(), salt);
 
@@ -104,11 +110,60 @@ export const registerController = [
   },
 ];
 
-export const verifyOtp = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {};
+export const verifyOtp = [
+  body("phone", "Invalid phone number")
+    .trim()
+    .notEmpty()
+    .matches("^[0-9]+$")
+    .isLength({ min: 5, max: 12 }),
+  body("otp", "Invalid OTP")
+    .trim()
+    .notEmpty()
+    .matches("^[0-9]+$")
+    .isLength({ min: 6, max: 6 }),
+  body("token", "Invalid token").trim().notEmpty().escape(),
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req).array({ onlyFirstError: true });
+    // If validation error occurs
+    if (errors.length > 0) {
+      const error: any = new Error(errors[0].msg);
+      error.status = 400;
+      error.code = "Error_Invalid";
+      return next(error);
+    }
+
+    const { phone, otp, token } = req.body;
+
+    const user = await getUserByPhone(phone);
+    checkUserExist(user);
+
+    const otpRow = await getOtpByPhone(phone);
+    checkOtpRow(otpRow);
+
+    const lastOtpVerify = new Date(otpRow!.updatedAt).toLocaleDateString();
+    const today = new Date().toLocaleDateString();
+    const isSameDate = lastOtpVerify === today;
+    // If OTP verify is in the same date and over limit
+    checkOtpErrorIfSameDate(isSameDate, otpRow!.error);
+
+    let result;
+
+    // Token is wrong
+    if (otpRow?.rememberToken !== token) {
+      const otpData = {
+        error: 5,
+      };
+      result = await updateOtp(otpRow!.id, otpData);
+
+      const error: any = new Error("Invalid token.");
+      error.status = 400;
+      error.code = "Error_Invalid";
+      return next(error);
+    }
+
+    res.status(200).json({ message: "OTP has been verified." });
+  },
+];
 
 export const confirmPassword = async (
   req: Request,
