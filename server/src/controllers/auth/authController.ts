@@ -13,6 +13,7 @@ import {
 } from "../../utils/auth";
 import { generateOTP, generateToken } from "../../utils/generate";
 import bcrypt from "bcrypt";
+import moment from "moment";
 
 export const registerController = [
   body("phone", "Invalid phone number")
@@ -146,14 +147,12 @@ export const verifyOtp = [
     // If OTP verify is in the same date and over limit
     checkOtpErrorIfSameDate(isSameDate, otpRow!.error);
 
-    let result;
-
     // Token is wrong
     if (otpRow?.rememberToken !== token) {
       const otpData = {
         error: 5,
       };
-      result = await updateOtp(otpRow!.id, otpData);
+      await updateOtp(otpRow!.id, otpData);
 
       const error: any = new Error("Invalid token.");
       error.status = 400;
@@ -161,7 +160,57 @@ export const verifyOtp = [
       return next(error);
     }
 
-    res.status(200).json({ message: "OTP has been verified." });
+    // OTP is expired
+    const isOTPExpired = moment().diff(otpRow!.updatedAt, "minutes") > 2;
+    if (isOTPExpired) {
+      const error: any = new Error("OTP is expired.");
+      error.status = 403;
+      error.code = "Error_Expired";
+      return next(error);
+    }
+
+    const isMatchOTP = await bcrypt.compare(otp, otpRow!.otp);
+    // OTP is wrong
+    if (!isMatchOTP) {
+      // If OTP error is first time today
+      if (isSameDate) {
+        const otpData = {
+          error: 1,
+        };
+
+        await updateOtp(otpRow!.id, otpData);
+      } else {
+        // If OTP error is not first time today
+        const otpData = {
+          error: {
+            increment: 1,
+          },
+        };
+
+        await updateOtp(otpRow!.id, otpData);
+      }
+
+      const error: any = new Error("OTP is incorrect.");
+      error.status = 401;
+      error.code = "Error_Invalid";
+      return next(error);
+    }
+
+    // All are ok
+    const verifyToken = generateToken();
+    const otpData = {
+      verifyToken,
+      error: 0,
+      count: 1,
+    };
+
+    const result = await updateOtp(otpRow!.id, otpData);
+
+    res.status(200).json({
+      message: "OTP is successfully verified.",
+      phone: result.phone,
+      token: result.verifyToken,
+    });
   },
 ];
 
