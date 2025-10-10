@@ -224,11 +224,12 @@ export const confirmPassword = [
     .notEmpty()
     .matches("^[0-9]+$")
     .isLength({ min: 5, max: 12 }),
-  body("password", "Password must be at least 8 characters")
+  body("password", "Password must be 8 digits")
     .trim()
     .notEmpty()
     .matches("^[0-9]+$")
     .isLength({ min: 8, max: 8 }),
+  body("token", "Invalid token").trim().notEmpty().escape(),
   body("token", "Invalid token").trim().notEmpty().escape(),
   async (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req).array({ onlyFirstError: true });
@@ -243,7 +244,7 @@ export const confirmPassword = [
     const { phone, password, token } = req.body;
 
     // Check if user exist
-    const existingUser = getUserByPhone(phone);
+    const existingUser = await getUserByPhone(phone);
     checkUserExist(existingUser);
 
     const otpRow = await getOtpByPhone(phone);
@@ -314,12 +315,24 @@ export const confirmPassword = [
 
     await updateUser(newUser.id, userUpdateData);
 
-    res.status(201).json({
-      message: "Your account is successfully created.",
-      userId: newUser.id,
-      accessToken,
-      refreshToken
-    });
+    res
+      .status(201)
+      .cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+        maxAge: 15 * 60 * 1000, // 15 minutes
+      })
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      })
+      .json({
+        message: "Your account is successfully created.",
+        userId: newUser.id,
+      });
   },
 ];
 
