@@ -58,13 +58,13 @@ async function main() {
   console.log(`Seeding finished.`);
 }
 
-main()
-  .then(async () => {
-    console.log(`Disconnecting from database`);
-    await prisma.$disconnect();
-  })
-  .catch(async (error) => {
-    console.error("Error seeding the database", error);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+// main()
+//   .then(async () => {
+//     console.log(`Disconnecting from database`);
+//     await prisma.$disconnect();
+//   })
+//   .catch(async (error) => {
+//     console.error("Error seeding the database", error);
+//     await prisma.$disconnect();
+//     process.exit(1);
+//   });
