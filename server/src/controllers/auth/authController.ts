@@ -5,6 +5,8 @@ import {
   getUserByPhone,
   getOtpByPhone,
   updateOtp,
+  createUser,
+  updateUser,
 } from "../../services/authServices";
 import {
   checkOtpErrorIfSameDate,
@@ -14,6 +16,7 @@ import {
 import { generateOTP, generateToken } from "../../utils/generate";
 import bcrypt from "bcrypt";
 import moment from "moment";
+import jwt from "jsonwebtoken";
 
 export const registerController = [
   body("phone", "Invalid phone number")
@@ -214,11 +217,111 @@ export const verifyOtp = [
   },
 ];
 
-export const confirmPassword = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {};
+// Sending OTP --> Verify OTP --> Confirm password = New Account
+export const confirmPassword = [
+  body("phone", "Invalid phone number")
+    .trim()
+    .notEmpty()
+    .matches("^[0-9]+$")
+    .isLength({ min: 5, max: 12 }),
+  body("password", "Password must be at least 8 characters")
+    .trim()
+    .notEmpty()
+    .matches("^[0-9]+$")
+    .isLength({ min: 8, max: 8 }),
+  body("token", "Invalid token").trim().notEmpty().escape(),
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req).array({ onlyFirstError: true });
+    // If validation error occurs
+    if (errors.length > 0) {
+      const error: any = new Error(errors[0].msg);
+      error.status = 400;
+      error.code = "Error_Invalid";
+      return next(error);
+    }
+
+    const { phone, password, token } = req.body;
+
+    // Check if user exist
+    const existingUser = getUserByPhone(phone);
+    checkUserExist(existingUser);
+
+    const otpRow = await getOtpByPhone(phone);
+    checkOtpRow(otpRow);
+
+    // if OTP count is over limit
+    if (otpRow?.error === 5) {
+      const error: any = new Error("This request may be an attack.");
+      error.status = 400;
+      error.code = "Error_BadRequest";
+      return next(error);
+    }
+
+    // Token is wrong
+    if (otpRow?.verifyToken !== token) {
+      const otpData = {
+        error: 5,
+      };
+      await updateOtp(otpRow!.id, otpData);
+
+      const error: any = new Error("Invalid token.");
+      error.status = 400;
+      error.code = "Error_Invalid";
+      return next(error);
+    }
+
+    // request is expired
+    const isExpired = moment().diff(otpRow!.updatedAt, "minutes") > 10;
+    if (isExpired) {
+      const error: any = new Error(
+        "Your request is expired. Please try again!"
+      );
+      error.status = 403;
+      error.code = "Error_Expired";
+      return next(error);
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const randomToken = "I will replace Refresh Token soon";
+
+    const userData = {
+      phone,
+      password: hashedPassword,
+      randomToken,
+    };
+
+    const newUser = await createUser(userData);
+
+    const accessTokenPayload = { id: newUser.id };
+    const refreshTokenPayload = { id: newUser.id, phone: newUser.phone };
+
+    const accessToken = jwt.sign(
+      accessTokenPayload,
+      process.env.ACCESS_TOKEN_SECRET!,
+      { expiresIn: 60 * 15 } // 15 minutes
+    );
+
+    const refreshToken = jwt.sign(
+      refreshTokenPayload,
+      process.env.REFRESH_TOKEN_SECRET!,
+      { expiresIn: "30d" }
+    );
+
+    const userUpdateData = {
+      randomToken: refreshToken,
+    };
+
+    await updateUser(newUser.id, userUpdateData);
+
+    res.status(201).json({
+      message: "Your account is successfully created.",
+      userId: newUser.id,
+      accessToken,
+      refreshToken
+    });
+  },
+];
 
 export const loginController = async (
   req: Request,
