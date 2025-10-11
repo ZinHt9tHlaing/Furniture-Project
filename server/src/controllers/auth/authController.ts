@@ -19,6 +19,7 @@ import { generateOTP, generateToken } from "../../utils/generate";
 import bcrypt from "bcrypt";
 import moment from "moment";
 import jwt from "jsonwebtoken";
+import { errorCode } from "../../config/errorCode";
 
 export const registerController = [
   body("phone", "Invalid phone number")
@@ -33,7 +34,7 @@ export const registerController = [
     if (errors.length > 0) {
       const error: any = new Error(errors[0].msg);
       error.status = 400;
-      error.code = "Error_Invalid";
+      error.code = errorCode.invalid;
       return next(error);
     }
 
@@ -92,7 +93,7 @@ export const registerController = [
             "OTP is allowed to request 3 times per day."
           );
           error.status = 405;
-          error.code = "Error_OverLimit";
+          error.code = errorCode.overLimit;
           return next(error);
         } else {
           // If OTP request is not the same date and not over limit
@@ -134,7 +135,7 @@ export const verifyOtp = [
     if (errors.length > 0) {
       const error: any = new Error(errors[0].msg);
       error.status = 400;
-      error.code = "Error_Invalid";
+      error.code = errorCode.invalid;
       return next(error);
     }
 
@@ -161,7 +162,7 @@ export const verifyOtp = [
 
       const error: any = new Error("Invalid token.");
       error.status = 400;
-      error.code = "Error_Invalid";
+      error.code = errorCode.invalid;
       return next(error);
     }
 
@@ -170,7 +171,7 @@ export const verifyOtp = [
     if (isOTPExpired) {
       const error: any = new Error("OTP is expired.");
       error.status = 403;
-      error.code = "Error_Expired";
+      error.code = errorCode.otpExpired;
       return next(error);
     }
 
@@ -197,7 +198,7 @@ export const verifyOtp = [
 
       const error: any = new Error("OTP is incorrect.");
       error.status = 401;
-      error.code = "Error_Invalid";
+      error.code = errorCode.invalid;
       return next(error);
     }
 
@@ -239,7 +240,7 @@ export const confirmPassword = [
     if (errors.length > 0) {
       const error: any = new Error(errors[0].msg);
       error.status = 400;
-      error.code = "Error_Invalid";
+      error.code = errorCode.invalid;
       return next(error);
     }
 
@@ -256,7 +257,7 @@ export const confirmPassword = [
     if (otpRow?.error === 5) {
       const error: any = new Error("This request may be an attack.");
       error.status = 400;
-      error.code = "Error_BadRequest";
+      error.code = errorCode.attack;
       return next(error);
     }
 
@@ -269,7 +270,7 @@ export const confirmPassword = [
 
       const error: any = new Error("Invalid token.");
       error.status = 400;
-      error.code = "Error_Invalid";
+      error.code = errorCode.invalid;
       return next(error);
     }
 
@@ -280,7 +281,7 @@ export const confirmPassword = [
         "Your request is expired. Please try again!"
       );
       error.status = 403;
-      error.code = "Error_Expired";
+      error.code = errorCode.requestExpired;
       return next(error);
     }
 
@@ -357,7 +358,7 @@ export const loginController = [
     if (errors.length > 0) {
       const error: any = new Error(errors[0].msg);
       error.status = 400;
-      error.code = "Error_Invalid";
+      error.code = errorCode.invalid;
       return next(error);
     }
 
@@ -380,7 +381,7 @@ export const loginController = [
         "Your account is temporarily locked. Please contact uss."
       );
       error.status = 401;
-      error.code = "Error_Freeze";
+      error.code = errorCode.accountFreeze;
       return next(error);
     }
 
@@ -417,7 +418,7 @@ export const loginController = [
       // --------- Ending -----------------------
       const error: any = new Error("Password is wrong");
       error.status = 401;
-      error.code = "Error_Invalid";
+      error.code = errorCode.invalid;
       return next(error);
     }
 
@@ -475,7 +476,7 @@ export const logoutController = async (
   if (!refreshToken) {
     const error: any = new Error("You are not a authenticated user.");
     error.status = 401;
-    error.code = "Error_Unauthenticated";
+    error.code = errorCode.unauthenticated;
     return next(error);
   }
 
@@ -488,7 +489,7 @@ export const logoutController = async (
   } catch (err) {
     const error: any = new Error("You are not a authenticated user.");
     error.status = 401;
-    error.code = "Error_Unauthenticated";
+    error.code = errorCode.unauthenticated;
     return next(error);
   }
 
@@ -498,7 +499,7 @@ export const logoutController = async (
   if (user?.phone !== decoded.phone) {
     const error: any = new Error("You are not a authenticated user.");
     error.status = 401;
-    error.code = "Error_Unauthenticated";
+    error.code = errorCode.unauthenticated;
     return next(error);
   }
 
@@ -508,8 +509,17 @@ export const logoutController = async (
   };
   await updateUser(user!.id, userData);
 
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+  });
+
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+  });
 
   return res.status(200).json({ message: "Successfully Logged Out." });
 };
