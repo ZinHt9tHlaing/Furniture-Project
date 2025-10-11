@@ -3,12 +3,17 @@ import helmet from "helmet";
 import compression from "compression";
 import cors from "cors";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
 import { limiter } from "./middlewares/rateLimiter";
+
+// middlewares
 import { checkMiddleware, CustomRequest } from "./middlewares/check";
+import { authMiddleware } from "./middlewares/authMiddleware";
 
 // routes imports
 import testRoutes from "./routes/v1/testRoutes";
 import authRoutes from "./routes/v1/auth/authRoute";
+import userRoutes from "./routes/v1/admin/userRoute";
 
 // view routes
 import viewRoutes from "./routes/v1/web/viewRoute";
@@ -30,6 +35,7 @@ app
   .use(morgan("dev")) // request logger
   .use(express.urlencoded({ extended: true }))
   .use(express.json())
+  .use(cookieParser())
   .use(cors())
   .use(helmet())
   .use(compression())
@@ -41,6 +47,7 @@ app.use(express.static("public"));
 // routes
 app.use("/api/v1", testRoutes);
 app.use("/api/v1", authRoutes);
+app.use("/api/v1/admins", authMiddleware, userRoutes);
 
 // view routes
 app.use(viewRoutes);
