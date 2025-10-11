@@ -7,6 +7,7 @@ import {
   updateOtp,
   createUser,
   updateUser,
+  getUserById,
 } from "../../services/authServices";
 import {
   checkOtpErrorIfSameDate,
@@ -462,3 +463,53 @@ export const loginController = [
       });
   },
 ];
+
+// clear HttpOnly cookies ( accessToken, refreshToken )
+// Update randomToken to delete in User Table
+export const logoutController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const refreshToken = req.cookies ? req.cookies.refreshToken : null;
+  if (!refreshToken) {
+    const error: any = new Error("You are not a authenticated user.");
+    error.status = 401;
+    error.code = "Error_Unauthenticated";
+    return next(error);
+  }
+
+  let decoded;
+  try {
+    decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!) as {
+      id: number;
+      phone: string;
+    };
+  } catch (err) {
+    const error: any = new Error("You are not a authenticated user.");
+    error.status = 401;
+    error.code = "Error_Unauthenticated";
+    return next(error);
+  }
+
+  const user = await getUserById(decoded.id);
+  checkUserIfNotExist(user);
+
+  if (user?.phone !== decoded.phone) {
+    const error: any = new Error("You are not a authenticated user.");
+    error.status = 401;
+    error.code = "Error_Unauthenticated";
+    return next(error);
+  }
+
+  // Update randomToken
+  const userData = {
+    randomToken: generateToken(),
+  };
+  await updateUser(user!.id, userData);
+
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+
+  return res.status(200).json({ message: "Successfully Logged Out." });
+};
