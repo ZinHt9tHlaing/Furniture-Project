@@ -25,10 +25,24 @@ export const app = express();
 app.set("view engine", "ejs");
 app.set("views", "src/views"); // set the views directory
 
-app.use(morgan("dev"));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cors());
+// cors options
+let whitelist = ["http://example1.com", "http://localhost:5173"];
+let corsOptions = {
+  origin: function (
+    origin: any,
+    callback: (err: Error | null, origin?: any) => void
+  ) {
+    // Allow requests with no origin ( like mobile apps or curl requests as Postman )
+    if (!origin) return callback(null, true);
+
+    if (whitelist.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, // Allow cookies or authorization headers
+};
 
 // middlewares
 app
@@ -36,7 +50,7 @@ app
   .use(express.urlencoded({ extended: true }))
   .use(express.json())
   .use(cookieParser())
-  .use(cors())
+  .use(cors(corsOptions))
   .use(helmet())
   .use(compression())
   .use(limiter);
