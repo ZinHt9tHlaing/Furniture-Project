@@ -11,6 +11,16 @@ export const authMiddleware = async (
   res: Response,
   next: NextFunction
 ) => {
+  // Check platform with custom header ( eg: mobile )
+  const platform = req.headers["x-platform"];
+  if (platform === "mobile") {
+    const accessTokenMobile = req.headers.authorization?.split(" ")[1];
+    console.log("Request from Mobile", accessTokenMobile);
+  } else {
+    console.log("Request from Web");
+  }
+
+  // Check access token for web
   const accessToken = req.cookies ? req.cookies.accessToken : null;
   const refreshToken = req.cookies ? req.cookies.refreshToken : null;
 
