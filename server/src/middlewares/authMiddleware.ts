@@ -56,6 +56,14 @@ export const authMiddleware = async (
       return next(err);
     }
 
+    // Check if decoded id is number or not
+    if (isNaN(decoded.id)) {
+      const err: any = new Error("You are not a authenticated user.");
+      err.status = 401;
+      err.code = errorCode.unauthenticated;
+      return next(err);
+    }
+
     const user = await getUserById(decoded.id);
     if (!user) {
       const err: any = new Error("This account has not registered.");
@@ -133,6 +141,14 @@ export const authMiddleware = async (
       decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!) as {
         id: number;
       };
+
+      // Check if decoded id is number or not
+      if (isNaN(decoded.id)) {
+        const err: any = new Error("You are not a authenticated user.");
+        err.status = 401;
+        err.code = errorCode.unauthenticated;
+        return next(err);
+      }
 
       req.userId = decoded.id;
 
