@@ -6,6 +6,14 @@ export interface CustomRequest extends Request {
   userId?: number;
 }
 
+// Refresh Token api for mobile coz mobile does not have cookie
+// request api -->
+// <-- response error expired
+// call refresh-token api -->
+// <-- response 2 new tokens ( access & refresh token )
+// request api with new access token -->
+
+// Call every api include - 2 httpOnly cookies in Website
 export const authMiddleware = async (
   req: CustomRequest,
   res: Response,

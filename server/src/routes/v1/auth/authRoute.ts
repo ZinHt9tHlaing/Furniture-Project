@@ -15,4 +15,7 @@ router.post("/confirm-password", confirmPassword);
 router.post("/login", loginController);
 router.post("/logout", logoutController);
 
+// Refresh Token api for mobile coz mobile does not have cookie
+// router.post("/refresh-token", setRefreshToken); 
+
 export default router;
