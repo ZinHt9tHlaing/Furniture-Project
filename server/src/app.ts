@@ -19,6 +19,7 @@ import { authMiddleware } from "./middlewares/authMiddleware";
 import testRoutes from "./routes/v1/testRoutes";
 import authRoutes from "./routes/v1/auth/authRoute";
 import userRoutes from "./routes/v1/admin/userRoute";
+import profileRoutes from "./routes/v1/api/profileRoute";
 
 // view routes
 import viewRoutes from "./routes/v1/web/viewRoute";
@@ -89,6 +90,7 @@ app.use(express.static("public"));
 app.use("/api/v1", testRoutes);
 app.use("/api/v1", authRoutes);
 app.use("/api/v1/admins", authMiddleware, userRoutes);
+app.use("/api/v1", profileRoutes);
 
 // view routes
 app.use(viewRoutes);
