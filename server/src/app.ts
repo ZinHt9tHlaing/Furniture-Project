@@ -6,6 +6,11 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import { limiter } from "./middlewares/rateLimiter";
 
+// i18n
+import i18next from "i18next";
+import Backend from "i18next-fs-backend";
+import middleware from "i18next-http-middleware"; // connected express and i18next
+
 // middlewares
 import { checkMiddleware, CustomRequest } from "./middlewares/check";
 import { authMiddleware } from "./middlewares/authMiddleware";
@@ -18,6 +23,7 @@ import userRoutes from "./routes/v1/admin/userRoute";
 // view routes
 import viewRoutes from "./routes/v1/web/viewRoute";
 import * as errorController from "./controllers/web/errorController";
+import path from "path";
 
 export const app = express();
 
@@ -54,6 +60,27 @@ app
   .use(helmet())
   .use(compression())
   .use(limiter);
+
+i18next
+  .use(Backend) // Get the translation file
+  .use(middleware.LanguageDetector) // Detect the language
+  .init({
+    backend: {
+      loadPath: path.join(
+        process.cwd(),
+        "src/locales",
+        "{{lng}}",
+        "{{ns}}.json"
+      ),
+    },
+    detection: {
+      order: ["querystring", "cookie"],
+      caches: ["cookie"],
+    },
+    fallbackLng: "en",
+    preload: ["en", "mm"],
+  });
+app.use(middleware.handle(i18next));
 
 // static
 app.use(express.static("public"));
