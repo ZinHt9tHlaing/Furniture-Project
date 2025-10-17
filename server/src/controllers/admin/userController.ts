@@ -1,5 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { CustomRequest } from "../../middlewares/authMiddleware";
+
+interface CustomRequest extends Request {
+  userId?: number;
+  user?: any;
+}
 
 export const getAllUsers = async (
   req: CustomRequest,
@@ -7,6 +11,13 @@ export const getAllUsers = async (
   next: NextFunction
 ) => {
   const id = req.userId;
+  const user = req.user;
 
-  res.status(200).json({ message: req.t("welcome"), currentUserId: id });
+  res
+    .status(200)
+    .json({
+      message: req.t("welcome"),
+      currentUserId: id,
+      currentUserRole: user.role,
+    });
 };

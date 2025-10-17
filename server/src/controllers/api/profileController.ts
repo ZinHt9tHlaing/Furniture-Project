@@ -30,3 +30,7 @@ export const changeLanguage = [
     });
   },
 ];
+
+export const testPermission = (req: CustomRequest, res: Response) => {
+  res.status(200).json({ message: "You have permission." });
+};

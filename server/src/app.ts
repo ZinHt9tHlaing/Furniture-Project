@@ -14,11 +14,12 @@ import middleware from "i18next-http-middleware"; // connected express and i18ne
 // middlewares
 import { checkMiddleware, CustomRequest } from "./middlewares/check";
 import { authMiddleware } from "./middlewares/authMiddleware";
+import { authorize } from "./middlewares/authorize";
 
 // routes imports
 import testRoutes from "./routes/v1/testRoutes";
 import authRoutes from "./routes/v1/auth/authRoute";
-import userRoutes from "./routes/v1/admin/userRoute";
+import adminRoutes from "./routes/v1/admin/userRoute";
 import profileRoutes from "./routes/v1/api/profileRoute";
 
 // view routes
@@ -89,7 +90,12 @@ app.use(express.static("public"));
 // routes
 app.use("/api/v1", testRoutes);
 app.use("/api/v1", authRoutes);
-app.use("/api/v1/admins", authMiddleware, userRoutes);
+app.use(
+  "/api/v1/admins",
+  authMiddleware,
+  authorize(true, "ADMIN"),
+  adminRoutes
+);
 app.use("/api/v1", profileRoutes);
 
 // view routes
