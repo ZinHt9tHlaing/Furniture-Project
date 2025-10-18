@@ -14,7 +14,7 @@ import middleware from "i18next-http-middleware"; // connected express and i18ne
 // middlewares
 import { checkMiddleware, CustomRequest } from "./middlewares/check";
 import { authMiddleware } from "./middlewares/authMiddleware";
-import { authorize } from "./middlewares/authorize";
+import { authorize } from "./middlewares/authorizeMiddleware";
 
 // routes imports
 import testRoutes from "./routes/v1/testRoutes";
