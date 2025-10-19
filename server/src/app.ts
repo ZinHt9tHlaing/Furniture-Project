@@ -5,6 +5,7 @@ import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import { limiter } from "./middlewares/rateLimiter";
+import path from "path";
 
 // i18n
 import i18next from "i18next";
@@ -12,20 +13,10 @@ import Backend from "i18next-fs-backend";
 import middleware from "i18next-http-middleware"; // connected express and i18next
 
 // middlewares
-import { checkMiddleware, CustomRequest } from "./middlewares/check";
-import { authMiddleware } from "./middlewares/authMiddleware";
-import { authorize } from "./middlewares/authorizeMiddleware";
+import { CustomRequest } from "./middlewares/check";
 
 // routes imports
-import testRoutes from "./routes/v1/testRoutes";
-import authRoutes from "./routes/v1/auth/authRoute";
-import adminRoutes from "./routes/v1/admin/userRoute";
-import profileRoutes from "./routes/v1/api/profileRoute";
-
-// view routes
-import viewRoutes from "./routes/v1/web/viewRoute";
-import * as errorController from "./controllers/web/errorController";
-import path from "path";
+import routes from "./routes/v1/indexRoute";
 
 export const app = express();
 
@@ -88,20 +79,7 @@ app.use(middleware.handle(i18next));
 app.use(express.static("public"));
 
 // routes
-app.use("/api/v1", testRoutes);
-app.use("/api/v1", authRoutes);
-app.use(
-  "/api/v1/admins",
-  authMiddleware,
-  authorize(true, "ADMIN"),
-  adminRoutes
-);
-app.use("/api/v1", profileRoutes);
-
-// view routes
-app.use(viewRoutes);
-// error view routes
-// app.use(errorController.notFound);
+app.use(routes);
 
 app.use((error: any, req: CustomRequest, res: Response, next: NextFunction) => {
   const status = error.status || 500;
