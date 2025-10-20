@@ -20,6 +20,7 @@ import bcrypt from "bcrypt";
 import moment from "moment";
 import jwt from "jsonwebtoken";
 import { errorCode } from "../../config/errorCode";
+import { createError } from "../../utils/error";
 
 export const registerController = [
   body("phone", "Invalid phone number")
@@ -89,12 +90,13 @@ export const registerController = [
       } else {
         // If OTP request is not the same date and over limit
         if (otpRow.count === 3) {
-          const error: any = new Error(
-            "OTP is allowed to request 3 times per day."
+          return next(
+            createError(
+              "OTP is allowed to request 3 times per day.",
+              405,
+              errorCode.overLimit
+            )
           );
-          error.status = 405;
-          error.code = errorCode.overLimit;
-          return next(error);
         } else {
           // If OTP request is not the same date and not over limit
           const otpData = {
@@ -169,10 +171,7 @@ export const verifyOtp = [
     // OTP is expired
     const isOTPExpired = moment().diff(otpRow!.updatedAt, "minutes") > 2;
     if (isOTPExpired) {
-      const error: any = new Error("OTP is expired.");
-      error.status = 403;
-      error.code = errorCode.otpExpired;
-      return next(error);
+      return next(createError("OTP is expired.", 403, errorCode.otpExpired));
     }
 
     const isMatchOTP = await bcrypt.compare(otp, otpRow!.otp);
@@ -196,10 +195,7 @@ export const verifyOtp = [
         await updateOtp(otpRow!.id, otpData);
       }
 
-      const error: any = new Error("OTP is incorrect.");
-      error.status = 401;
-      error.code = errorCode.invalid;
-      return next(error);
+      return next(createError("OTP is incorrect.", 401, errorCode.invalid));
     }
 
     // All are ok
@@ -255,10 +251,9 @@ export const confirmPassword = [
 
     // if OTP count is over limit
     if (otpRow?.error === 5) {
-      const error: any = new Error("This request may be an attack.");
-      error.status = 400;
-      error.code = errorCode.attack;
-      return next(error);
+      return next(
+        createError("This request may be an attack.", 400, errorCode.attack)
+      );
     }
 
     // Token is wrong
@@ -277,12 +272,13 @@ export const confirmPassword = [
     // request is expired
     const isExpired = moment().diff(otpRow!.updatedAt, "minutes") > 10;
     if (isExpired) {
-      const error: any = new Error(
-        "Your request is expired. Please try again!"
+      return next(
+        createError(
+          "Your request is expired. Please try again!",
+          403,
+          errorCode.requestExpired
+        )
       );
-      error.status = 403;
-      error.code = errorCode.requestExpired;
-      return next(error);
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -476,10 +472,13 @@ export const logoutController = async (
 ) => {
   const refreshToken = req.cookies ? req.cookies.refreshToken : null;
   if (!refreshToken) {
-    const error: any = new Error("You are not a authenticated user.");
-    error.status = 401;
-    error.code = errorCode.unauthenticated;
-    return next(error);
+    return next(
+      createError(
+        "You are not a authenticated user.",
+        401,
+        errorCode.unauthenticated
+      )
+    );
   }
 
   let decoded;
@@ -489,28 +488,37 @@ export const logoutController = async (
       phone: string;
     };
   } catch (err) {
-    const error: any = new Error("You are not a authenticated user.");
-    error.status = 401;
-    error.code = errorCode.unauthenticated;
-    return next(error);
+    return next(
+      createError(
+        "You are not a authenticated user.",
+        401,
+        errorCode.unauthenticated
+      )
+    );
   }
 
   // Check if decoded id is number or not
   if (isNaN(decoded.id)) {
-    const err: any = new Error("You are not a authenticated user.");
-    err.status = 401;
-    err.code = errorCode.unauthenticated;
-    return next(err);
+    return next(
+      createError(
+        "You are not a authenticated user.",
+        401,
+        errorCode.unauthenticated
+      )
+    );
   }
 
   const user = await getUserById(decoded.id);
   checkUserIfNotExist(user);
 
   if (user?.phone !== decoded.phone) {
-    const error: any = new Error("You are not a authenticated user.");
-    error.status = 401;
-    error.code = errorCode.unauthenticated;
-    return next(error);
+    return next(
+      createError(
+        "You are not a authenticated user.",
+        401,
+        errorCode.unauthenticated
+      )
+    );
   }
 
   // Update randomToken
@@ -591,12 +599,13 @@ export const forgetPassword = [
     } else {
       // If OTP request is not the same date and over limit
       if (otpRow!.count === 3) {
-        const error: any = new Error(
-          "OTP is allowed to request 3 times per day."
+        return next(
+          createError(
+            "OTP is allowed to request 3 times per day.",
+            405,
+            errorCode.overLimit
+          )
         );
-        error.status = 405;
-        error.code = errorCode.overLimit;
-        return next(error);
       } else {
         // If OTP request is not the same date and not over limit
         const otpData = {
@@ -661,19 +670,13 @@ export const verifyOtpForPassword = [
       };
       await updateOtp(otpRow!.id, otpData);
 
-      const error: any = new Error("Invalid token.");
-      error.status = 400;
-      error.code = errorCode.invalid;
-      return next(error);
+      return next(createError("Invalid token.", 400, errorCode.invalid));
     }
 
     // OTP is expired
     const isOTPExpired = moment().diff(otpRow!.updatedAt, "minutes") > 2;
     if (isOTPExpired) {
-      const error: any = new Error("OTP is expired.");
-      error.status = 403;
-      error.code = errorCode.otpExpired;
-      return next(error);
+      return next(createError("OTP is expired.", 403, errorCode.otpExpired));
     }
 
     const isMatchOTP = await bcrypt.compare(otp, otpRow!.otp);
@@ -751,12 +754,13 @@ export const resetPassword = [
     const otpRow = await getOtpByPhone(phone);
 
     if (otpRow?.error === 5) {
-      const err: any = new Error(
-        "This request may be an attack. It not, try again tomorrow."
+      return next(
+        createError(
+          "This request may be an attack. It not, try again tomorrow.",
+          401,
+          errorCode.attack
+        )
       );
-      err.status = 401;
-      err.code = errorCode.attack;
-      return next(err);
     }
 
     if (otpRow?.verifyToken !== token) {
@@ -765,21 +769,19 @@ export const resetPassword = [
       };
       await updateOtp(otpRow!.id, otpData);
 
-      const error: any = new Error("Invalid token.");
-      error.status = 400;
-      error.code = errorCode.invalid;
-      return next(error);
+      return next(createError("Invalid token.", 400, errorCode.invalid));
     }
 
     // request is expired
     const isExpired = moment().diff(otpRow!.updatedAt, "minutes") > 5;
     if (isExpired) {
-      const error: any = new Error(
-        "Your request is expired. Please try again."
+      return next(
+        createError(
+          "Your request is expired. Please try again.",
+          403,
+          errorCode.otpExpired
+        )
       );
-      error.status = 403;
-      error.code = errorCode.otpExpired;
-      return next(error);
     }
 
     const salt = await bcrypt.genSalt(10);

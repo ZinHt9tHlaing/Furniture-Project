@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { errorCode } from "../config/errorCode";
 import { getUserById, updateUser } from "../services/authServices";
+import { createError } from "../utils/error";
 
 export interface CustomRequest extends Request {
   userId?: number;
@@ -34,10 +35,13 @@ export const authMiddleware = async (
   const refreshToken = req.cookies ? req.cookies.refreshToken : null;
 
   if (!refreshToken) {
-    const error: any = new Error("You are not a authenticated user.");
-    error.status = 401;
-    error.code = errorCode.unauthenticated;
-    return next(error);
+    return next(
+      createError(
+        "You are not a authenticated user.",
+        401,
+        errorCode.unauthenticated
+      )
+    );
   }
 
   // Generate new tokens
@@ -50,41 +54,56 @@ export const authMiddleware = async (
         phone: string;
       };
     } catch (error) {
-      const err: any = new Error("You are not a authenticated user.");
-      err.status = 401;
-      err.code = errorCode.unauthenticated;
-      return next(err);
+      return next(
+        createError(
+          "You are not a authenticated user.",
+          401,
+          errorCode.unauthenticated
+        )
+      );
     }
 
     // Check if decoded id is number or not
     if (isNaN(decoded.id)) {
-      const err: any = new Error("You are not a authenticated user.");
-      err.status = 401;
-      err.code = errorCode.unauthenticated;
-      return next(err);
+      return next(
+        createError(
+          "You are not a authenticated user.",
+          401,
+          errorCode.unauthenticated
+        )
+      );
     }
 
     const user = await getUserById(decoded.id);
     if (!user) {
-      const err: any = new Error("This account has not registered.");
-      err.status = 401;
-      err.code = errorCode.unauthenticated;
-      return next(err);
+      return next(
+        createError(
+          "This account has not registered.",
+          401,
+          errorCode.unauthenticated
+        )
+      );
     }
 
     if (user.phone !== decoded.phone) {
-      const err: any = new Error("You are not a authenticated user.");
-      err.status = 401;
-      err.code = errorCode.unauthenticated;
-      return next(err);
+      return next(
+        createError(
+          "You are not a authenticated user.",
+          401,
+          errorCode.unauthenticated
+        )
+      );
     }
 
     // Check if refresh token is valid
     if (user.randomToken !== refreshToken) {
-      const err: any = new Error("You are not a authenticated user.");
-      err.status = 401;
-      err.code = errorCode.unauthenticated;
-      return next(err);
+      return next(
+        createError(
+          "You are not a authenticated user.",
+          401,
+          errorCode.unauthenticated
+        )
+      );
     }
 
     const accessTokenPayload = { id: user.id };
@@ -130,10 +149,13 @@ export const authMiddleware = async (
 
   if (!accessToken) {
     generateNewTokens();
-    // const error: any = new Error("Access token has expired.");
-    // error.status = 401;
-    // error.code = "Error_AccessTokenExpired";
-    // return next(error);
+    // return next(
+    //   createError(
+    //     "Access token has expired.",
+    //     401,
+    //     errorCode.accessTokenExpired
+    //   )
+    // );
   } else {
     // Verify access token
     let decoded;
@@ -144,10 +166,13 @@ export const authMiddleware = async (
 
       // Check if decoded id is number or not
       if (isNaN(decoded.id)) {
-        const err: any = new Error("You are not a authenticated user.");
-        err.status = 401;
-        err.code = errorCode.unauthenticated;
-        return next(err);
+        return next(
+          createError(
+            "You are not a authenticated user.",
+            401,
+            errorCode.unauthenticated
+          )
+        );
       }
 
       req.userId = decoded.id;
@@ -162,10 +187,9 @@ export const authMiddleware = async (
         // error.code = errorCode.accessTokenExpired;
       } else {
         // if not correct JWT token ( jwt secret key )
-        error.message = "Access Token is invalid.";
-        error.status = 400;
-        error.code = errorCode.attack;
-        return next(error);
+        return next(
+          createError("Access Token is invalid.", 400, errorCode.attack)
+        );
       }
     }
   }
