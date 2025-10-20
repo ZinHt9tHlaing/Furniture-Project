@@ -300,7 +300,7 @@ export const confirmPassword = [
     const accessToken = jwt.sign(
       accessTokenPayload,
       process.env.ACCESS_TOKEN_SECRET!,
-      { expiresIn: 60 * 10 } // 10 minutes
+      { expiresIn: 60 * 15 } // 15 minutes
     );
 
     const refreshToken = jwt.sign(
@@ -425,7 +425,7 @@ export const loginController = [
       accessTokenPayload,
       process.env.ACCESS_TOKEN_SECRET!,
       {
-        expiresIn: 60 * 10, // 10 minutes
+        expiresIn: 60 * 15, // 15 minutes
       }
     );
 
@@ -795,7 +795,7 @@ export const resetPassword = [
       accessTokenPayload,
       process.env.ACCESS_TOKEN_SECRET!,
       {
-        expiresIn: 60 * 10, // 10 minutes
+        expiresIn: 60 * 15, // 15 minutes
       }
     );
 
