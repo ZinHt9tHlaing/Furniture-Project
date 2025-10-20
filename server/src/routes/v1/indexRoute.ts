@@ -14,15 +14,17 @@ import path from "path";
 // middlewares
 import { authMiddleware } from "../../middlewares/authMiddleware";
 import { authorize } from "../../middlewares/authorizeMiddleware";
+import { maintenanceMiddleware } from "../../middlewares/maintenanceMiddleware";
 
 const router = express.Router();
 
 // routes
 // router.use("/api/v1", testRoutes);
-router.use("/api/v1", authRoutes);
-router.use("/api/v1/user", userRoutes);
+router.use("/api/v1", maintenanceMiddleware, authRoutes);
+router.use("/api/v1/user", maintenanceMiddleware, userRoutes);
 router.use(
   "/api/v1/admins",
+  maintenanceMiddleware,
   authMiddleware,
   authorize(true, "ADMIN"),
   adminRoutes
