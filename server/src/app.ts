@@ -6,6 +6,7 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import { limiter } from "./middlewares/rateLimiter";
 import path from "path";
+import cron from "node-cron";
 
 // i18n
 import i18next from "i18next";
@@ -17,6 +18,10 @@ import { CustomRequest } from "./middlewares/check";
 
 // routes imports
 import routes from "./routes/v1/indexRoute";
+import {
+  createOrUpdateSettingStatus,
+  getSettingStatus,
+} from "./services/settingService";
 
 export const app = express();
 
@@ -88,4 +93,14 @@ app.use((error: any, req: CustomRequest, res: Response, next: NextFunction) => {
 
   res.status(status).json({ message, error: errorCode });
   next();
+});
+
+cron.schedule("* 5 * * *", async () => {
+  // Run a task every 5 A.M
+  console.log("Running a task every 5am For testing purpose");
+  const setting = await getSettingStatus("maintenance");
+  if (setting?.value === "true") {
+    await createOrUpdateSettingStatus("maintenance", "false");
+    console.log("Now maintenance mode is off");
+  }
 });
