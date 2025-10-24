@@ -4,6 +4,7 @@ import { errorCode } from "../../config/errorCode";
 import { authorize } from "../../utils/authorize";
 import { getUserById } from "../../services/authServices";
 import { checkUserIfNotExist } from "../../utils/auth";
+import { checkUploadFile } from "../../utils/check";
 
 interface CustomRequest extends Request {
   userId?: number;
@@ -52,4 +53,22 @@ export const testPermission = async (req: CustomRequest, res: Response) => {
   }
 
   res.status(200).json({ currentUserRole: user?.role, info });
+};
+
+export const uploadProfile = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = req.userId;
+  const image = req.file;
+
+  const user = await getUserById(userId!);
+  checkUserIfNotExist(user);
+
+  checkUploadFile(image);
+
+  res
+    .status(200)
+    .json({ message: "Profile uploaded successfully.", file: req.file });
 };
