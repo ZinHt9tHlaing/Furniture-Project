@@ -4,6 +4,7 @@ import {
   uploadProfile,
   testPermission,
   getMyPhoto,
+  uploadProfileMultiple,
 } from "../../../controllers/api/profileController";
 import { authMiddleware } from "../../../middlewares/authMiddleware";
 import uploadFileMiddleware from "../../../middlewares/uploadFileMiddleware";
@@ -17,6 +18,12 @@ router.patch(
   authMiddleware,
   uploadFileMiddleware.single("avatar"),
   uploadProfile
+);
+router.patch(
+  "/profile/upload/multiple",
+  authMiddleware,
+  uploadFileMiddleware.array("avatar"),
+  uploadProfileMultiple
 );
 
 router.get("/profile/my-photo", authMiddleware, getMyPhoto); // Just for testing

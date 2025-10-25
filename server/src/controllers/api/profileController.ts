@@ -86,7 +86,6 @@ export const uploadProfile = async (
         "/uploads/images",
         userDoc?.image!
       );
-      console.log("filePath", filePath);
 
       await unlink(filePath);
     } catch (error) {
@@ -102,6 +101,18 @@ export const uploadProfile = async (
   res
     .status(200)
     .json({ message: "Profile uploaded successfully.", image: fileName });
+};
+
+export const uploadProfileMultiple = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  console.log("req.files -------", req.files);
+
+  const file = res.status(200).json({
+    message: "Multiple Profile pictures uploaded successfully.",
+  });
 };
 
 export const getMyPhoto = async (
