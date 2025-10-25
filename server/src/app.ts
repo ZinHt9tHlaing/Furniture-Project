@@ -80,8 +80,9 @@ i18next
   });
 app.use(middleware.handle(i18next));
 
-// static
+// static public Access ( File )
 app.use(express.static("public"));
+app.use(express.static("uploads"));
 
 // routes
 app.use(routes);

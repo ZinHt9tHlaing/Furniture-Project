@@ -21,7 +21,7 @@ const router = express.Router();
 // routes
 // router.use("/api/v1", testRoutes);
 
-// router.use("/api/v1/user", maintenanceMiddleware, userRoutes);
+// router.use("/api/v1/users", maintenanceMiddleware, userRoutes);
 // router.use(
 //   "/api/v1/admins",
 //   maintenanceMiddleware,
@@ -31,7 +31,7 @@ const router = express.Router();
 // );
 
 router.use("/api/v1", authRoutes);
-router.use("/api/v1/user", userRoutes);
+router.use("/api/v1/users", userRoutes);
 router.use(
   "/api/v1/admins",
   authMiddleware,
