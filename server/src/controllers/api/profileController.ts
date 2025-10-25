@@ -1,10 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import { query, validationResult } from "express-validator";
+import { unlink } from "node:fs/promises";
+import path from "path";
+
 import { errorCode } from "../../config/errorCode";
 import { authorize } from "../../utils/authorize";
-import { getUserById } from "../../services/authServices";
+import { getUserById, updateUser } from "../../services/authServices";
 import { checkUserIfNotExist } from "../../utils/auth";
 import { checkUploadFile } from "../../utils/check";
+import { log } from "node:console";
 
 interface CustomRequest extends Request {
   userId?: number;
@@ -63,12 +67,39 @@ export const uploadProfile = async (
   const userId = req.userId;
   const image = req.file;
 
-  const user = await getUserById(userId!);
-  checkUserIfNotExist(user);
+  const userDoc = await getUserById(userId!);
+  checkUserIfNotExist(userDoc);
 
   checkUploadFile(image);
 
+  const fileName = image?.filename;
+  // const filePath = image?.path; // for Mac
+  // const filePath = image?.path.replace("\\", "/"); // for Windows
+
+  // Delete old image
+  if (userDoc?.image) {
+    try {
+      // get old image file path
+      const filePath = path.join(
+        __dirname,
+        "../../..",
+        "/uploads/images",
+        userDoc?.image!
+      );
+      console.log("filePath", filePath);
+
+      await unlink(filePath);
+    } catch (error) {
+      console.log("No image found.", error);
+    }
+  }
+
+  const userData = {
+    image: fileName,
+  };
+  await updateUser(userDoc?.id!, userData);
+
   res
     .status(200)
-    .json({ message: "Profile uploaded successfully.", file: req.file });
+    .json({ message: "Profile uploaded successfully.", image: fileName });
 };
