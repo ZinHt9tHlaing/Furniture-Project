@@ -5,9 +5,12 @@ import {
   testPermission,
   getMyPhoto,
   uploadProfileMultiple,
+  uploadProfileOptimize
 } from "../../../controllers/api/profileController";
 import { authMiddleware } from "../../../middlewares/authMiddleware";
-import uploadFileMiddleware from "../../../middlewares/uploadFileMiddleware";
+import uploadFileMiddleware, {
+  uploadMemoryMiddleware,
+} from "../../../middlewares/uploadFileMiddleware";
 
 const router = express.Router();
 
@@ -18,6 +21,12 @@ router.patch(
   authMiddleware,
   uploadFileMiddleware.single("avatar"),
   uploadProfile
+);
+router.patch(
+  "/profile/upload/optimize",
+  authMiddleware,
+  uploadMemoryMiddleware.single("avatar"),
+  uploadProfileOptimize
 );
 router.patch(
   "/profile/upload/multiple",

@@ -2,13 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import { query, validationResult } from "express-validator";
 import { unlink } from "node:fs/promises";
 import path from "path";
+import sharp from "sharp";
 
 import { errorCode } from "../../config/errorCode";
 import { authorize } from "../../utils/authorize";
 import { getUserById, updateUser } from "../../services/authServices";
 import { checkUserIfNotExist } from "../../utils/auth";
 import { checkUploadFile } from "../../utils/check";
-import { log } from "node:console";
 
 interface CustomRequest extends Request {
   userId?: number;
@@ -112,6 +112,67 @@ export const uploadProfileMultiple = async (
 
   const file = res.status(200).json({
     message: "Multiple Profile pictures uploaded successfully.",
+  });
+};
+
+export const uploadProfileOptimize = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = req.userId;
+  const image = req.file;
+  const userDoc = await getUserById(userId!);
+  checkUserIfNotExist(userDoc);
+  checkUploadFile(image);
+
+  const fileName = Date.now() + "-" + `${Math.round(Math.random() * 1e9)}.webp`;
+
+  try {
+    // get optimized image file path
+    const optimizedImagePath = path.join(
+      __dirname,
+      "../../..",
+      "/uploads/images",
+      fileName
+    );
+
+    // optimize image
+    await sharp(req.file?.buffer)
+      .resize(200, 200)
+      .webp({ quality: 50 })
+      .toFile(optimizedImagePath);
+  } catch (error) {
+    console.error("error", error);
+    res.status(500).json({ message: "Image optimization failed." });
+    return;
+  }
+
+  // Delete old image
+  if (userDoc?.image) {
+    try {
+      // get old image file path
+      const filePath = path.join(
+        __dirname,
+        "../../..",
+        "/uploads/images",
+        userDoc?.image!
+      );
+
+      await unlink(filePath);
+    } catch (error) {
+      console.log("No image found.", error);
+    }
+  }
+
+  const userData = {
+    image: fileName,
+  };
+  await updateUser(userDoc?.id!, userData);
+
+  res.status(200).json({
+    message: "Profile picture uploaded successfully.",
+    image: fileName,
   });
 };
 

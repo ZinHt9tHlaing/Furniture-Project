@@ -36,10 +36,18 @@ function fileFilter(
   }
 }
 
+// Upload to disk ( server )
 const uploadFileMiddleware = multer({
   storage: fileStorage,
   fileFilter,
-  limits: { fileSize: 1024 * 1024 * 5 }, // Testing purpose, Maximum file size is 5MB
+   limits: { fileSize: 1024 * 1024 * 10 }, // Testing purpose 10MB
+});
+
+// Upload to memory
+export const uploadMemoryMiddleware = multer({
+  storage: multer.memoryStorage(),
+  fileFilter,
+  limits: { fileSize: 1024 * 1024 * 10 }, // Maximum file size is 10MB, so image optimization is needed.
 });
 
 export default uploadFileMiddleware;
