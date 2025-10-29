@@ -130,10 +130,23 @@ export const uploadProfileOptimize = async (
   // no extension, just filename
   const splitFileName = req.file?.filename.split(".")[0];
 
-  const job = await ImageQueue.add("optimize-image", {
-    filePath: req.file?.path,
-    fileName: `${splitFileName}.webp`,
-  });
+  const job = await ImageQueue.add(
+    "optimize-image",
+    {
+      filePath: req.file?.path,
+      fileName: `${splitFileName}.webp`,
+      width: 200,
+      height: 200,
+      quality: 50,
+    },
+    {
+      attempts: 3, // max attempts
+      backoff: {
+        type: "exponential", 
+        delay: 1000,
+      },
+    }
+  );
 
   // try {
   //   // get optimized image file path
