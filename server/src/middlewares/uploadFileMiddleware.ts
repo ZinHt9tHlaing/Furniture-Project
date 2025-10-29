@@ -14,8 +14,10 @@ const fileStorage = multer.diskStorage({
     // }
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + "-" + file.originalname);
+    const extension = file.mimetype.split("/")[1];
+    const uniqueSuffix =
+      Date.now() + "-" + Math.round(Math.random() * 1e9) + "." + extension;
+    cb(null, uniqueSuffix);
   },
 });
 
@@ -40,7 +42,7 @@ function fileFilter(
 const uploadFileMiddleware = multer({
   storage: fileStorage,
   fileFilter,
-   limits: { fileSize: 1024 * 1024 * 10 }, // Testing purpose 10MB
+  limits: { fileSize: 1024 * 1024 * 10 }, // Testing purpose 10MB
 });
 
 // Upload to memory

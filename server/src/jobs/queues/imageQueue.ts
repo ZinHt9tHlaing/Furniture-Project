@@ -1,10 +1,11 @@
 import { Queue } from "bullmq";
 import { Redis } from "ioredis";
+import "dotenv/config";
 
 const redisConnection = new Redis({
-  //   username: process.env.REDIS_USERNAME,
+  username: process.env.REDIS_USERNAME,
   host: process.env.REDIS_HOST,
-  port: parseInt(process.env.REDIS_PORT!),
+  port: Number(process.env.REDIS_PORT),
   password: process.env.REDIS_PASSWORD,
 });
 

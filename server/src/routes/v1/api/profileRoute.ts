@@ -5,7 +5,7 @@ import {
   testPermission,
   getMyPhoto,
   uploadProfileMultiple,
-  uploadProfileOptimize
+  uploadProfileOptimize,
 } from "../../../controllers/api/profileController";
 import { authMiddleware } from "../../../middlewares/authMiddleware";
 import uploadFileMiddleware, {
@@ -25,7 +25,7 @@ router.patch(
 router.patch(
   "/profile/upload/optimize",
   authMiddleware,
-  uploadMemoryMiddleware.single("avatar"),
+  uploadFileMiddleware.single("avatar"),
   uploadProfileOptimize
 );
 router.patch(

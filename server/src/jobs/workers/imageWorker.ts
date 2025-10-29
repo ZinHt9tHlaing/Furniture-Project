@@ -2,11 +2,12 @@ import { Worker } from "bullmq";
 import { Redis } from "ioredis";
 import path from "path";
 import sharp from "sharp";
+import "dotenv/config";
 
 const redisConnection = new Redis({
-  //   username: process.env.REDIS_USERNAME,
+  username: process.env.REDIS_USERNAME,
   host: process.env.REDIS_HOST,
-  port: parseInt(process.env.REDIS_PORT!),
+  port: Number(process.env.REDIS_PORT),
   password: process.env.REDIS_PASSWORD,
   maxRetriesPerRequest: null,
 });
@@ -15,18 +16,21 @@ const redisConnection = new Redis({
 const ImageWorker = new Worker(
   "imageQueue",
   async (job) => {
-    const { filePath, filename } = job.data;
+    const { filePath, fileName } = job.data;
+
+    // get optimized image file path
     const optimizedImagePath = path.join(
       __dirname,
       "../../..",
       "/uploads/optimizeImages",
-      filename
+      fileName
     );
+
+    // optimize image
     await sharp(filePath)
       .resize(200, 200)
       .webp({ quality: 50 })
       .toFile(optimizedImagePath);
-    return true;
   },
   { connection: redisConnection }
 );
