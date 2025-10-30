@@ -7,6 +7,7 @@ import {
   deletePost,
   updatePost,
 } from "../../../controllers/admin/postController";
+import { createPostValidator } from "../../../validators/postValidators";
 
 const router = express.Router();
 
@@ -14,7 +15,12 @@ router.get("/users", getAllUsers);
 router.post("/maintenance", setMaintenance);
 
 // CRUD for Posts
-router.post("/posts", uploadFileMiddleware.single("image"), createPost);
+router.post(
+  "/posts",
+  createPostValidator,
+  uploadFileMiddleware.single("image"),
+  createPost
+);
 router.patch("/posts", uploadFileMiddleware.single("image"), updatePost);
 router.patch("/posts", deletePost);
 
