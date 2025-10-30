@@ -11,6 +11,10 @@ import { authMiddleware } from "../../../middlewares/authMiddleware";
 import uploadFileMiddleware, {
   uploadMemoryMiddleware,
 } from "../../../middlewares/uploadFileMiddleware";
+import {
+  getPostById,
+  getPostsByPagination,
+} from "../../../controllers/api/postController";
 
 const router = express.Router();
 
@@ -36,5 +40,8 @@ router.patch(
 );
 
 router.get("/profile/my-photo", authMiddleware, getMyPhoto); // Just for testing
+
+router.get("/posts", authMiddleware, getPostsByPagination);
+router.get("/post/:id", authMiddleware, getPostById);
 
 export default router;
