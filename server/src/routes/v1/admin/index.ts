@@ -17,8 +17,8 @@ router.post("/maintenance", setMaintenance);
 // CRUD for Posts
 router.post(
   "/posts",
-  createPostValidator,
   uploadFileMiddleware.single("image"),
+  createPostValidator,
   createPost
 );
 router.patch("/posts", uploadFileMiddleware.single("image"), updatePost);

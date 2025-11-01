@@ -26,7 +26,7 @@ export const createPost = [
     const user = req.user;
     const image = req.file;
 
-    const userDoc = await getUserById(user!);
+    const userDoc = await getUserById(user!.id);
     checkUserIfNotExist(userDoc);
     checkUploadFile(image);
 
