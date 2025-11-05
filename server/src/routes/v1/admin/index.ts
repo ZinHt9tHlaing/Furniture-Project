@@ -7,7 +7,10 @@ import {
   deletePost,
   updatePost,
 } from "../../../controllers/admin/postController";
-import { createPostValidator } from "../../../validators/postValidators";
+import {
+  createPostValidator,
+  updatePostValidator,
+} from "../../../validators/postValidators";
 
 const router = express.Router();
 
@@ -21,7 +24,12 @@ router.post(
   createPostValidator,
   createPost
 );
-router.patch("/posts", uploadFileMiddleware.single("image"), updatePost);
+router.patch(
+  "/posts",
+  uploadFileMiddleware.single("image"),
+  updatePostValidator,
+  updatePost
+);
 router.patch("/posts", deletePost);
 
 export default router;

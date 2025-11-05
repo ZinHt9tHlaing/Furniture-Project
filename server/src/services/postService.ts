@@ -60,3 +60,7 @@ export const createOnePost = async (postData: PostType) => {
     data,
   });
 };
+
+export const getPostById = async (id: number) => {
+  return await prisma.post.findUnique({ where: { id } });
+};
