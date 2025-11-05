@@ -7,17 +7,53 @@ import { checkUserIfNotExist } from "../../utils/auth";
 import { checkUploadFile } from "../../utils/check";
 import ImageQueue from "../../jobs/queues/imageQueue";
 import { createOnePost, PostType } from "../../services/postService";
+import { unlink } from "node:fs/promises";
+import path from "node:path";
 
 interface CustomRequest extends Request {
   userId?: number;
   user?: any;
 }
 
+export const removeFiles = async (
+  originalFile: string,
+  optimizedFile: string | null
+) => {
+  try {
+    // get old image file path
+    const originalFilePath = path.join(
+      __dirname,
+      "../../..",
+      "/uploads/images",
+      originalFile
+    );
+
+    await unlink(originalFilePath);
+
+    // get old optimized image file path
+    if (optimizedFile) {
+      const optimizedFilePath = path.join(
+        __dirname,
+        "../../..",
+        "/uploads/optimizeImages",
+        originalFile
+      );
+
+      await unlink(optimizedFilePath);
+    }
+  } catch (error) {
+    console.log("No image found.", error);
+  }
+};
+
 export const createPost = [
   async (req: CustomRequest, res: Response, next: NextFunction) => {
     const errors = validationResult(req).array({ onlyFirstError: true });
     // If validation error occurs
     if (errors.length > 0) {
+      if (req.file) {
+        await removeFiles(req.file.filename, null);
+      }
       return next(createError(errors[0].msg, 400, errorCode.invalid));
     }
 
@@ -25,10 +61,22 @@ export const createPost = [
     // const user = req.userId;
     const user = req.user;
     const image = req.file;
+    checkUploadFile(image);
 
     const userDoc = await getUserById(user!.id);
-    checkUserIfNotExist(userDoc);
-    checkUploadFile(image);
+    if (!userDoc) {
+      if (req.file) {
+        await removeFiles(req.file.filename, null);
+      }
+
+      return next(
+        createError(
+          "This user has not registered.",
+          401,
+          errorCode.unauthenticated
+        )
+      );
+    }
 
     // no extension, just filename
     const splitFileName = req.file?.filename.split(".")[0];
