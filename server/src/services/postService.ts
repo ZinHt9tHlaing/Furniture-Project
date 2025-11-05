@@ -19,10 +19,13 @@ export const createOnePost = async (postData: PostType) => {
     content: postData.content,
     body: postData.body,
     image: postData.image,
+
+    // one to many
     author: {
       connect: { id: postData.authorId },
     },
 
+    // one to many
     category: {
       connectOrCreate: {
         where: { name: postData.category },
@@ -31,6 +34,8 @@ export const createOnePost = async (postData: PostType) => {
         },
       },
     },
+
+    // one to many
     type: {
       connectOrCreate: {
         where: { name: postData.type },
