@@ -42,7 +42,7 @@ export const removeFiles = async (
         __dirname,
         "../../..",
         "/uploads/optimizeImages",
-        originalFile
+        optimizedFile
       );
 
       await unlink(optimizedFilePath);

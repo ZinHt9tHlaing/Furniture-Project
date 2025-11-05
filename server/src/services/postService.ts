@@ -64,3 +64,50 @@ export const createOnePost = async (postData: PostType) => {
 export const getPostById = async (id: number) => {
   return await prisma.post.findUnique({ where: { id } });
 };
+
+export const updateOnePost = async (postId: number, postData: PostType) => {
+  let data: any = {
+    title: postData.title,
+    content: postData.content,
+    body: postData.body,
+
+    // one to many
+    category: {
+      connectOrCreate: {
+        where: { name: postData.category },
+        create: {
+          name: postData.category,
+        },
+      },
+    },
+
+    // one to many
+    type: {
+      connectOrCreate: {
+        where: { name: postData.type },
+        create: {
+          name: postData.type,
+        },
+      },
+    },
+  };
+
+  if (postData.image) {
+    data.image = postData.image;
+  }
+
+  // many to many
+  if (postData.tags && postData.tags.length > 0) {
+    data.tags = {
+      connectOrCreate: postData.tags.map((tagName: string) => ({
+        where: { name: tagName },
+        create: { name: tagName },
+      })),
+    };
+  }
+
+  return await prisma.post.update({
+    where: { id: postId },
+    data,
+  });
+};
