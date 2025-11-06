@@ -12,7 +12,8 @@ import uploadFileMiddleware, {
   uploadMemoryMiddleware,
 } from "../../../middlewares/uploadFileMiddleware";
 import {
-  getPostById,
+  getInfinitePostsByPagination,
+  getPost,
   getPostsByPagination,
 } from "../../../controllers/api/postController";
 
@@ -42,6 +43,7 @@ router.patch(
 router.get("/profile/my-photo", authMiddleware, getMyPhoto); // Just for testing
 
 router.get("/posts", authMiddleware, getPostsByPagination);
-router.get("/post/:id", authMiddleware, getPostById);
+router.get("/posts/infinite", authMiddleware, getInfinitePostsByPagination);
+router.get("/post/:id", authMiddleware, getPost);
 
 export default router;
