@@ -4,13 +4,14 @@ import { errorCode } from "../../config/errorCode";
 import { createError } from "../../utils/error";
 import { getUserById } from "../../services/authServices";
 import { checkUserIfNotExist } from "../../utils/auth";
-import { checkUploadFile } from "../../utils/check";
+import { checkModelIfExist, checkUploadFile } from "../../utils/check";
 import ImageQueue from "../../jobs/queues/imageQueue";
 import {
   createOnePost,
+  deleteOnePost,
   getPostById,
   PostType,
-  updateOnePost
+  updateOnePost,
 } from "../../services/postService";
 import { unlink } from "node:fs/promises";
 import path from "node:path";
@@ -222,16 +223,40 @@ export const updatePost = [
 
     const postUpdated = await updateOnePost(post.id, data);
 
-    res
-      .status(201)
-      .json({
-        message: "Successfully updated a new post.",
-        postId: postUpdated.id,
-      });
+    res.status(201).json({
+      message: "Successfully updated the post.",
+      postId: postUpdated.id,
+    });
   },
 ];
 
 export const deletePost = [
-  body(""),
-  async (req: CustomRequest, res: Response, next: NextFunction) => {},
+  async (req: CustomRequest, res: Response, next: NextFunction) => {
+     const { postId } = req.body;
+
+    const user = req.user;
+
+    const userDoc = await getUserById(user!.id);
+    checkUserIfNotExist(userDoc);
+
+    const post = await getPostById(+postId);
+    checkModelIfExist(post);
+
+    // Check if the user is not authorized to modify this post
+    if (userDoc?.id !== post?.authorId) {
+      return next(
+        createError("This action is not allowed.", 403, errorCode.unauthorized)
+      );
+    }
+
+    const postDeleted = await deleteOnePost(post!.id);
+
+    const optimizedFile = post!.image.split(".")[0] + ".webp";
+    await removeFiles(post!.image, optimizedFile);
+
+    res.status(201).json({
+      message: "Successfully deleted the post.",
+      postId: postDeleted.id,
+    });
+  },
 ];

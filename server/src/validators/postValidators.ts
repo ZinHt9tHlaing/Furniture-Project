@@ -41,3 +41,7 @@ export const updatePostValidator = [
       return value;
     }),
 ];
+
+export const deletePostValidator = [
+  body("postId", "Post Id is required.").trim().notEmpty().isInt({ min: 1 }),
+];

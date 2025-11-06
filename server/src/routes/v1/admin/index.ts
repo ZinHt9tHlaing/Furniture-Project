@@ -9,6 +9,7 @@ import {
 } from "../../../controllers/admin/postController";
 import {
   createPostValidator,
+  deletePostValidator,
   updatePostValidator,
 } from "../../../validators/postValidators";
 
@@ -30,6 +31,6 @@ router.patch(
   updatePostValidator,
   updatePost
 );
-router.patch("/posts", deletePost);
+router.delete("/posts", deletePostValidator, deletePost);
 
 export default router;
