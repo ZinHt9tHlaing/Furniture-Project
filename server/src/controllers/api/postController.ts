@@ -139,6 +139,59 @@ export const getPostsByPagination = [
 
 // Cursor-based Pagination
 export const getInfinitePostsByPagination = [
-  body(""),
-  async (req: CustomRequest, res: Response, next: NextFunction) => {},
+  query("cursor", "Cursor must be Post ID.").isInt({ gt: 0 }).optional(),
+  query("limit", "Limit number must be unsigned integer")
+    .isInt({ gt: 4 }) // starts from page 5
+    .optional(),
+  async (req: CustomRequest, res: Response, next: NextFunction) => {
+    const errors = validationResult(req).array({ onlyFirstError: true });
+    // If validation error occurs
+    if (errors.length > 0) {
+      return next(createError(errors[0].msg, 400, errorCode.invalid));
+    }
+
+    // string to number with +
+    const lastCursor = req.query.cursor && +req.query.cursor;
+    const limit = req.query.limit ? +req.query.limit : 5;
+
+    const userId = req.userId;
+    const userDoc = await getUserById(userId!);
+    checkUserIfNotExist(userDoc);
+
+    const posts = await prisma.post.findMany({
+      take: limit + 1,
+      skip: lastCursor ? 1 : 0,
+      cursor: lastCursor ? { id: lastCursor } : undefined,
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        body: true,
+        image: true,
+        updatedAt: true,
+        author: {
+          select: {
+            fullName: true,
+          },
+        },
+      },
+      orderBy: { id: "asc" },
+    });
+
+    const hasNextPage = posts.length > limit; // if 6 > 5
+
+    if (hasNextPage) {
+      // pop() -> remove the last element from an array
+      posts.pop(); // if 6 posts, remove 6 and response 5 posts
+    }
+
+    const newCursor = posts.length > 0 ? posts[posts.length - 1].id : null;
+
+    res.status(200).json({
+      message: "Get All infinite posts",
+      hasNextPage,
+      newCursor,
+      posts,
+    });
+  },
 ];
