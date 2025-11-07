@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import { body, param, validationResult } from "express-validator";
+import { body, param, query, validationResult } from "express-validator";
 import { errorCode } from "../../config/errorCode";
 import { createError } from "../../utils/error";
 import { getUserById } from "../../services/authServices";
 import { checkUserIfNotExist } from "../../utils/auth";
 import { checkModelIfExist } from "../../utils/check";
 import { getPostById, getPostWithRelations } from "../../services/postService";
+import { prisma } from "../../services/prismaClient";
 
 interface CustomRequest extends Request {
   userId?: number;
@@ -14,6 +15,12 @@ interface CustomRequest extends Request {
 export const getPost = [
   param("id", "Post ID is required.").isInt({ gt: 0 }),
   async (req: CustomRequest, res: Response, next: NextFunction) => {
+    const errors = validationResult(req).array({ onlyFirstError: true });
+    // If validation error occurs
+    if (errors.length > 0) {
+      return next(createError(errors[0].msg, 400, errorCode.invalid));
+    }
+
     const userId = req.userId;
     const postId = req.params.id;
 
@@ -59,11 +66,78 @@ export const getPost = [
   },
 ];
 
+// Offset Pagination
 export const getPostsByPagination = [
-  body(""),
-  async (req: CustomRequest, res: Response, next: NextFunction) => {},
+  query("page", "Page number must be unsigned integer.")
+    .isInt({ gt: 0 })
+    .optional(),
+  query("limit", "Limit number must be unsigned integer")
+    .isInt({ gt: 4 }) // starts from page 5
+    .optional(),
+  async (req: CustomRequest, res: Response, next: NextFunction) => {
+    const errors = validationResult(req).array({ onlyFirstError: true });
+    // If validation error occurs
+    if (errors.length > 0) {
+      return next(createError(errors[0].msg, 400, errorCode.invalid));
+    }
+
+    // string to number with +
+    const page = req.query.page ? +req.query.page : 1;
+    const limit = req.query.limit ? +req.query.limit : 5;
+
+    const userId = req.userId;
+    const userDoc = await getUserById(userId!);
+    checkUserIfNotExist(userDoc);
+
+    // pagination skip formula
+    const skip = (page - 1) * limit;
+    // ( 1 - 1 ) * 5 => 1 ကနေ စယူ
+    // ( 2 - 1 ) * 5 => 6 ကနေ စယူ
+    // ( 3 - 1 ) * 5 => 11 ကနေ စယူ
+
+    const posts = await prisma.post.findMany({
+      skip,
+      take: limit + 1,
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        body: true,
+        image: true,
+        updatedAt: true,
+        author: {
+          select: {
+            fullName: true,
+          },
+        },
+      },
+      orderBy: { updatedAt: "desc" },
+    });
+
+    const hasNextPage = posts.length > limit; // if 6 > 5
+    let nextPage = null;
+
+    const previousPage = page !== 1 ? page - 1 : null;
+
+    if (hasNextPage) {
+      // pop() -> remove the last element from an array
+      posts.pop(); // if 6 posts, remove 6 and response 5 posts
+      nextPage = page + 1; // nextPage starts 6
+    }
+
+    res.status(200).json({
+      message: "Get All Posts",
+      count: posts.length,
+      currentPage: page,
+      hasNextPage,
+      nextPage,
+      previousPage,
+      posts,
+    });
+  },
 ];
 
+// Cursor-based Pagination
 export const getInfinitePostsByPagination = [
   body(""),
   async (req: CustomRequest, res: Response, next: NextFunction) => {},
