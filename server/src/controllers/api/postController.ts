@@ -5,8 +5,13 @@ import { createError } from "../../utils/error";
 import { getUserById } from "../../services/authServices";
 import { checkUserIfNotExist } from "../../utils/auth";
 import { checkModelIfExist } from "../../utils/check";
-import { getPostById, getPostWithRelations } from "../../services/postService";
+import {
+  getPostById,
+  getPostsList,
+  getPostWithRelations,
+} from "../../services/postService";
 import { prisma } from "../../services/prismaClient";
+import { getOrSetCache } from "../../utils/cache";
 
 interface CustomRequest extends Request {
   userId?: number;
@@ -27,7 +32,14 @@ export const getPost = [
     const userDoc = await getUserById(userId!);
     checkUserIfNotExist(userDoc);
 
-    const post = await getPostWithRelations(+postId);
+    // const post = await getPostWithRelations(+postId);
+
+    const cacheKey = `posts:${JSON.stringify(+postId)}`;
+    console.log(cacheKey);
+
+    const post = await getOrSetCache(cacheKey, async () => {
+      return await getPostWithRelations(+postId);
+    });
 
     // const modifiedPost = {
     //   id: post?.id,
@@ -55,14 +67,14 @@ export const getPost = [
     //   post?.updatedAt ? post?.updatedAt.toISOString().split("T")[0] : null
     // );
 
-    const tagNames = post?.tags.map((tag) => tag.name);
+    // const tagNames = post?.tags.map((tag) => tag.name);
 
-    const transformedPost = {
-      ...post,
-      tags: tagNames,
-    };
+    // const transformedPost = {
+    //   ...post,
+    //   tags: tagNames,
+    // };
 
-    res.status(200).json({ message: "Post Details", transformedPost });
+    res.status(200).json({ message: "Post Details", post });
   },
 ];
 
@@ -95,7 +107,7 @@ export const getPostsByPagination = [
     // ( 2 - 1 ) * 5 => 6 ကနေ စယူ
     // ( 3 - 1 ) * 5 => 11 ကနေ စယူ
 
-    const posts = await prisma.post.findMany({
+    const options = {
       skip,
       take: limit + 1,
       select: {
@@ -112,6 +124,11 @@ export const getPostsByPagination = [
         },
       },
       orderBy: { updatedAt: "desc" },
+    };
+
+    const cacheKey = `posts:${JSON.stringify(req.query)}`;
+    const posts = await getOrSetCache(cacheKey, async () => {
+      return await getPostsList(options);
     });
 
     const hasNextPage = posts.length > limit; // if 6 > 5
@@ -158,7 +175,7 @@ export const getInfinitePostsByPagination = [
     const userDoc = await getUserById(userId!);
     checkUserIfNotExist(userDoc);
 
-    const posts = await prisma.post.findMany({
+    const options = {
       take: limit + 1,
       skip: lastCursor ? 1 : 0,
       cursor: lastCursor ? { id: lastCursor } : undefined,
@@ -176,6 +193,15 @@ export const getInfinitePostsByPagination = [
         },
       },
       orderBy: { id: "asc" },
+    };
+
+    // const posts = await getPostsList(options);
+
+    const cacheKey = `posts:${JSON.stringify(req.query)}`;
+    console.log("cacheKey", cacheKey);
+
+    const posts = await getOrSetCache(cacheKey, async () => {
+      return await getPostsList(options);
     });
 
     const hasNextPage = posts.length > limit; // if 6 > 5
