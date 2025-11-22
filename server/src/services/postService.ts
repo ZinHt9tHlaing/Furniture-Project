@@ -97,6 +97,7 @@ export const updateOnePost = async (postId: number, postData: PostType) => {
   // many to many
   if (postData.tags && postData.tags.length > 0) {
     data.tags = {
+      set: [], // disconnect all existing relationship tags
       connectOrCreate: postData.tags.map((tagName: string) => ({
         where: { name: tagName },
         create: { name: tagName },

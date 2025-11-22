@@ -70,20 +70,20 @@ export const createPost = [
     const user = req.user;
     checkUploadFile(req.file);
 
-    const userDoc = await getUserById(user!.id);
-    if (!userDoc) {
-      if (req.file) {
-        await removeFiles(req.file.filename, null);
-      }
+    // const userDoc = await getUserById(user!.id);
+    // if (!userDoc) {
+    //   if (req.file) {
+    //     await removeFiles(req.file.filename, null);
+    //   }
 
-      return next(
-        createError(
-          "This user has not registered.",
-          401,
-          errorCode.unauthenticated
-        )
-      );
-    }
+    //   return next(
+    //     createError(
+    //       "This user has not registered.",
+    //       401,
+    //       errorCode.unauthenticated
+    //     )
+    //   );
+    // }
 
     // no extension, just filename
     const splitFileName = req.file?.filename.split(".")[0];
@@ -154,20 +154,20 @@ export const updatePost = [
     // const user = req.userId;
     const user = req.user;
 
-    const userDoc = await getUserById(user!.id);
-    if (!userDoc) {
-      if (req.file) {
-        await removeFiles(req.file.filename, null);
-      }
+    // const userDoc = await getUserById(user!.id);
+    // if (!userDoc) {
+    //   if (req.file) {
+    //     await removeFiles(req.file.filename, null);
+    //   }
 
-      return next(
-        createError(
-          "This user has not registered.",
-          401,
-          errorCode.unauthenticated
-        )
-      );
-    }
+    //   return next(
+    //     createError(
+    //       "This user has not registered.",
+    //       401,
+    //       errorCode.unauthenticated
+    //     )
+    //   );
+    // }
 
     const post = await getPostById(+postId); // string to number eg: "8" => 8
 
@@ -261,14 +261,14 @@ export const deletePost = [
 
     const user = req.user;
 
-    const userDoc = await getUserById(user!.id);
-    checkUserIfNotExist(userDoc);
+    // const userDoc = await getUserById(user!.id);
+    // checkUserIfNotExist(userDoc);
 
     const post = await getPostById(+postId);
     checkModelIfExist(post);
 
     // Check if the user is not authorized to modify this post
-    if (userDoc?.id !== post?.authorId) {
+    if (user?.id !== post?.authorId) {
       return next(
         createError("This action is not allowed.", 403, errorCode.unauthorized)
       );
