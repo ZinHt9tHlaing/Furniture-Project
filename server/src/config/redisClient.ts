@@ -1,4 +1,5 @@
 import { Redis } from "ioredis";
+import "dotenv/config";
 
 export const redis = new Redis({
   username: process.env.REDIS_USERNAME,

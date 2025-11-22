@@ -16,6 +16,7 @@ import {
 import { unlink } from "node:fs/promises";
 import path from "node:path";
 import { notFound } from "../web/errorController";
+import CacheQueue from "../../jobs/queues/cacheQueue";
 
 interface CustomRequest extends Request {
   userId?: number;
@@ -118,6 +119,18 @@ export const createPost = [
     };
 
     const post = await createOnePost(data);
+
+    // invalidate cache after creating a new post
+    await CacheQueue.add(
+      "invalidate-post-cache",
+      {
+        pattern: "posts:*", // invalidate ( delete ) all posts
+      },
+      {
+        jobId: `invalidate-${Date.now()}`, // unique job id
+        priority: 1, // high priority
+      }
+    );
 
     res
       .status(201)
@@ -223,6 +236,18 @@ export const updatePost = [
 
     const postUpdated = await updateOnePost(post.id, data);
 
+    // invalidate cache after updating a post
+    await CacheQueue.add(
+      "invalidate-post-cache",
+      {
+        pattern: "posts:*", // invalidate ( delete ) all posts
+      },
+      {
+        jobId: `invalidate-${Date.now()}`, // unique job id
+        priority: 1, // high priority
+      }
+    );
+
     res.status(201).json({
       message: "Successfully updated the post.",
       postId: postUpdated.id,
@@ -232,7 +257,7 @@ export const updatePost = [
 
 export const deletePost = [
   async (req: CustomRequest, res: Response, next: NextFunction) => {
-     const { postId } = req.body;
+    const { postId } = req.body;
 
     const user = req.user;
 
@@ -253,6 +278,18 @@ export const deletePost = [
 
     const optimizedFile = post!.image.split(".")[0] + ".webp";
     await removeFiles(post!.image, optimizedFile);
+
+    // invalidate cache after deleting a post
+    await CacheQueue.add(
+      "invalidate-post-cache",
+      {
+        pattern: "posts:*", // invalidate ( delete ) all posts
+      },
+      {
+        jobId: `invalidate-${Date.now()}`, // unique job id
+        priority: 1, // high priority
+      }
+    );
 
     res.status(201).json({
       message: "Successfully deleted the post.",
