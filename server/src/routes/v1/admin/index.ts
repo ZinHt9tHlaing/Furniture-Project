@@ -12,6 +12,8 @@ import {
   deletePostValidator,
   updatePostValidator,
 } from "../../../validators/postValidators";
+import { createProduct } from "../../../controllers/admin/productController";
+import { createProductValidator } from "../../../validators/productValidators";
 
 const router = express.Router();
 
@@ -32,5 +34,20 @@ router.patch(
   updatePost
 );
 router.delete("/posts", deletePostValidator, deletePost);
+
+// CRUD for Products
+router.post(
+  "/products",
+  uploadFileMiddleware.array("images", 4),
+  createProductValidator,
+  createProduct
+);
+// router.patch(
+//   "/products",
+//   uploadFileMiddleware.array("images"),
+//   updatePostValidator,
+//   updatePostProduct
+// );
+// router.delete("/products", deletePostValidator, deleteProduct);
 
 export default router;
