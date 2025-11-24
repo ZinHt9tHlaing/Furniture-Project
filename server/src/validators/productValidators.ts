@@ -7,7 +7,7 @@ export const createProductValidator = [
     .isFloat({ min: 0.1 })
     .isDecimal({ decimal_digits: "1,2" }),
   body("discount", "Discount is required.")
-    .isFloat({ min: 0.1 })
+    .isFloat({ min: 0 })
     .isDecimal({ decimal_digits: "1,2" }),
   body("inventory", "Inventory is required.").isInt({ min: 1 }),
   body("category", "Category is required.").trim().notEmpty().escape(),
@@ -33,7 +33,7 @@ export const updateProductValidator = [
     .isFloat({ min: 0.1 })
     .isDecimal({ decimal_digits: "1,2" }),
   body("discount", "Discount is required.")
-    .isFloat({ min: 0.1 })
+    .isFloat({ min: 0 })
     .isDecimal({ decimal_digits: "1,2" }),
   body("inventory", "Inventory is required.").isInt({ min: 1 }),
   body("category", "Category is required.").trim().notEmpty().escape(),

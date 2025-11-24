@@ -41,6 +41,8 @@ export const getPost = [
       return await getPostWithRelations(+postId);
     });
 
+    checkModelIfExist(post);
+
     // const modifiedPost = {
     //   id: post?.id,
     //   title: post?.title,

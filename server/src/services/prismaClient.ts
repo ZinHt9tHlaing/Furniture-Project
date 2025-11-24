@@ -42,5 +42,15 @@ export const prisma = new PrismaClient().$extends({
         },
       },
     },
+
+    // Image model
+    image: {
+      path: {
+        needs: { path: true },
+        compute(image) {
+          return "/optimizeImages/" + image?.path.split(".")[0] + ".webp";
+        },
+      },
+    },
   },
 });

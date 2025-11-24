@@ -1,6 +1,4 @@
-import { PrismaClient } from "../../generated/prisma";
-
-const prisma = new PrismaClient();
+import { prisma } from "./prismaClient";
 
 export const createOneProduct = async (data: any) => {
   const productData: any = {
@@ -106,4 +104,29 @@ export const updateOneProduct = async (productId: number, data: any) => {
 
 export const deleteOneProduct = async (id: number) => {
   return prisma.product.delete({ where: { id } });
+};
+
+export const getProductWithRelations = async (id: number) => {
+  return prisma.product.findUnique({
+    where: { id },
+    omit: {
+      categoryId: true,
+      typeId: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+    include: {
+      images: {
+        select: {
+          id: true,
+          path: true,
+        },
+      },
+    },
+  });
+};
+
+// for Pagination
+export const getProductsList = async (options: any) => {
+  return await prisma.product.findMany(options);
 };
