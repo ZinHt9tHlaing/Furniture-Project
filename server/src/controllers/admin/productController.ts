@@ -4,9 +4,10 @@ import { createError } from "../../utils/error";
 import { errorCode } from "../../config/errorCode";
 import { unlink } from "node:fs/promises";
 import path from "node:path";
-import { checkUploadFile } from "../../utils/check";
+import { checkModelIfExist, checkUploadFile } from "../../utils/check";
 import {
   createOneProduct,
+  deleteOneProduct,
   getProductById,
   updateOneProduct,
 } from "../../services/productService";
@@ -129,7 +130,7 @@ export const createProduct = [
     await CacheQueue.add(
       "invalidate-product-cache",
       {
-        pattern: "products:*", // invalidate ( delete ) all posts
+        pattern: "products:*", // invalidate ( delete ) all products
       },
       {
         jobId: `invalidate-${Date.now()}`, // unique job id
@@ -235,19 +236,16 @@ export const updateProduct = async (
       (img) => img.path.split(".")[0] + ".webp"
     ); // optimized images
 
-    console.log("oldFiles", oldFiles);
-    console.log("optFiles", optFiles);
-
     await removeFiles(oldFiles, optFiles);
   }
 
   const updatedProduct = await updateOneProduct(+product.id, data);
 
-  // invalidate cache after creating a new post
+  // invalidate cache after updating a post
   await CacheQueue.add(
     "invalidate-post-cache",
     {
-      pattern: "posts:*", // invalidate ( delete ) all posts
+      pattern: "posts:*", // invalidate ( delete ) all products
     },
     {
       jobId: `invalidate-${Date.now()}`, // unique job id
@@ -258,5 +256,49 @@ export const updateProduct = async (
   res.status(200).json({
     message: "Successfully updated the product.",
     productId: updatedProduct.id,
+  });
+};
+
+export const deleteProduct = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const errors = validationResult(req).array({ onlyFirstError: true });
+  // If validation error occurs
+  if (errors.length > 0) {
+    return next(createError(errors[0].msg, 400, errorCode.invalid));
+  }
+
+  const { productId } = req.body;
+
+  const product = await getProductById(+productId);
+  checkModelIfExist(product);
+
+  const deletedProduct = await deleteOneProduct(+product!.id);
+
+  // Deleting Old Images
+  const oldFiles = product!.images.map((img) => img.path); // original images
+  const optFiles = product!.images.map(
+    (img) => img.path.split(".")[0] + ".webp"
+  ); // optimized images
+
+  await removeFiles(oldFiles, optFiles);
+
+  // invalidate cache after deleting a post
+  await CacheQueue.add(
+    "invalidate-post-cache",
+    {
+      pattern: "posts:*", // invalidate ( delete ) all products
+    },
+    {
+      jobId: `invalidate-${Date.now()}`, // unique job id
+      priority: 1, // high priority
+    }
+  );
+
+  res.status(200).json({
+    message: "Successfully deleted the product.",
+    productId: deletedProduct.id,
   });
 };

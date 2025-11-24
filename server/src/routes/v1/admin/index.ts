@@ -12,8 +12,8 @@ import {
   deletePostValidator,
   updatePostValidator,
 } from "../../../validators/postValidators";
-import { createProduct, updateProduct } from "../../../controllers/admin/productController";
-import { createProductValidator, updateProductValidator } from "../../../validators/productValidators";
+import { createProduct, deleteProduct, updateProduct } from "../../../controllers/admin/productController";
+import { createProductValidator, deleteProductValidator, updateProductValidator } from "../../../validators/productValidators";
 
 const router = express.Router();
 
@@ -48,6 +48,6 @@ router.patch(
   updateProductValidator,
   updateProduct
 );
-// router.delete("/products", deletePostValidator, deleteProduct);
+router.delete("/products", deleteProduct);
 
 export default router;
