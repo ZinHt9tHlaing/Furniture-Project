@@ -1,6 +1,6 @@
 import { Icons } from "@/components/Icons";
 import { siteConfig } from "@/config/site";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import Banner from "@/data/images/house.webp";
 import LoginForm from "@/components/auth/LoginForm";
 
@@ -23,7 +23,7 @@ const Login = () => {
         <div className="flex w-full place-items-center px-4 lg:px-0">
           <LoginForm />
         </div>
-        <div className="relative hidden lg:block size-full">
+        <div className="relative hidden size-full lg:block">
           <img
             src={Banner}
             alt="Furniture Shop"

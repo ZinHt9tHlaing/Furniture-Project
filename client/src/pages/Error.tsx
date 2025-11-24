@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import {
   Card,
   CardHeader,
@@ -16,7 +16,7 @@ export default function ErrorPage() {
     <div className="flex min-h-screen flex-col overflow-hidden">
       <Header />
       <main className="mx-auto my-32 flex flex-1 items-center">
-        <Card className="w-[350px] max-w-md rounded-2xl shadow-lg md:w-[500px] lg:w-[500px]">
+        <Card className="w-[350px] max-w-md py-3 rounded-2xl shadow-lg md:w-[500px] lg:w-[500px]">
           <CardHeader className="flex flex-col items-center">
             <Icons.exclamation
               className="mb-2 size-12 text-red-500"

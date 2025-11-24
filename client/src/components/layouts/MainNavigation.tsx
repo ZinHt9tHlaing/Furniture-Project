@@ -9,7 +9,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 import { cn } from "@/lib/utils";
 import { MainNavItem } from "@/types";

@@ -1,7 +1,7 @@
 import RegisterForm from "@/components/auth/RegisterForm";
 import { Icons } from "@/components/Icons";
 import { siteConfig } from "@/config/site";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import Banner from "@/data/images/house.webp";
 
 const Register = () => {

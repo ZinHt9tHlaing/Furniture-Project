@@ -1,7 +1,7 @@
 import { Icons } from "@/components/Icons";
 import { Button } from "@/components/ui/button";
 import { posts } from "@/data/posts";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router";
 
 const BlogDetail = () => {
   const { postId } = useParams();

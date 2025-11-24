@@ -13,7 +13,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 import {
   Accordion,
@@ -31,7 +31,7 @@ const MobileNavigation = ({ items }: MainNavigationProps) => {
   const [isDesktop, setIsDesktop] = useState<boolean>(false);
 
   const query = "(min-width: 1024px)";
-  
+
   // check if the screen size is larger than 1024px
   useEffect(() => {
     const onChangeHandler = (event: MediaQueryListEvent) => {

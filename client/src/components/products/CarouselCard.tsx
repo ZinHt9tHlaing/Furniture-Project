@@ -9,7 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Product } from "@/types";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 interface ProductProps {
   products: Product[];

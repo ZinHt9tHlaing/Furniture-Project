@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router";
 
 import { products } from "@/data/products";
 import Autoplay from "embla-carousel-autoplay";

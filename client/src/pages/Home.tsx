@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Couch from "../data/images/couch.png";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import CarouselCard from "@/components/products/CarouselCard";
 import { products } from "@/data/products";
 import BlogCard from "@/components/blogs/BlogCard";
@@ -23,7 +23,7 @@ const Home = () => {
       <h2 className="mb-4 text-2xl font-bold md:mb-0">{title}</h2>
       <Link
         to={String(href)}
-        className="text-muted-foreground font-semibold underline duration-200 lg:hover:scale-105 md:active:scale-100"
+        className="text-muted-foreground font-semibold underline duration-200 md:active:scale-100 lg:hover:scale-105"
       >
         {sideText}
       </Link>

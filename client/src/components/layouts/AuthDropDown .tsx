@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { User } from "@/types";
 
 import { Button } from "../ui/button";

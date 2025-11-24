@@ -323,12 +323,14 @@ export const confirmPassword = [
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         maxAge: 15 * 60 * 1000, // 15 minutes
+        path: "/",
       })
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        path: "/",
       })
       .json({
         message: "Your account is successfully created.",
@@ -449,12 +451,14 @@ export const loginController = [
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         maxAge: 15 * 60 * 1000, // 15 minutes
+        path: "/",
       })
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        path: "/",
       })
       .json({
         message: "Successfully Logged In.",
@@ -531,12 +535,14 @@ export const logoutController = async (
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    path: "/",
   });
 
   res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    path: "/",
   });
 
   return res.status(200).json({ message: "Successfully Logged Out." });
@@ -819,12 +825,14 @@ export const resetPassword = [
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         maxAge: 15 * 60 * 1000, // 15 minutes
+        path: "/",
       })
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        path: "/",
       })
       .json({
         message: "Successfully reset your password.",

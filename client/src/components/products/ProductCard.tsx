@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { Icons } from "../Icons";
 import { cn, formatPrice } from "@/lib/utils";
 

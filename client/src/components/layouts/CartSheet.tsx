@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { cartItems } from "@/data/carts";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { ScrollArea } from "../ui/scroll-area";
 import CartItem from "../cart/CartItem";
 import { formatPrice } from "@/lib/utils";
@@ -53,7 +53,7 @@ export default function CartSheet() {
                 ))}
               </div>
             </ScrollArea>
-            <div className="space-y-4 mx-5">
+            <div className="mx-5 space-y-4">
               <Separator />
               <div className="mx-4 space-y-1.5 text-base">
                 <div className="flex justify-between">
