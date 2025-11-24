@@ -248,7 +248,7 @@ export const updatePost = [
       }
     );
 
-    res.status(201).json({
+    res.status(200).json({
       message: "Successfully updated the post.",
       postId: postUpdated.id,
     });
@@ -291,7 +291,7 @@ export const deletePost = [
       }
     );
 
-    res.status(201).json({
+    res.status(200).json({
       message: "Successfully deleted the post.",
       postId: postDeleted.id,
     });
