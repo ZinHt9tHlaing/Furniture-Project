@@ -8,7 +8,7 @@ const Login = () => {
   return (
     <div className="relative">
       <Link
-        to={"/"}
+        to={"#"}
         className="group text-foreground/80 hover:text-foreground fixed top-6 left-8 flex items-center text-lg font-bold tracking-tight transition-colors"
       >
         <Icons.logo
@@ -23,11 +23,11 @@ const Login = () => {
         <div className="flex w-full place-items-center px-4 lg:px-0">
           <LoginForm />
         </div>
-        <div className="relative hidden size-full lg:block">
+        <div className="relative hidden lg:block">
           <img
             src={Banner}
             alt="Furniture Shop"
-            className="relative inset-0 object-cover"
+            className="relative inset-0 size-full object-cover"
           />
         </div>
       </main>

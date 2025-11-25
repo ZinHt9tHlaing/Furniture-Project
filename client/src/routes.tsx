@@ -22,6 +22,7 @@ import ProductDetailPage from "./pages/products/ProductDetail";
 import SuspenseFallback from "./components/loading/SuspenseFallback";
 import LoginPage from "./pages/auth/Login";
 import RegisterPage from "./pages/auth/Register";
+import { homeLoader } from "./router/loader/loaderIndex";
 
 export const router = createBrowserRouter([
   {
@@ -32,6 +33,7 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <HomePage />,
+        loader: homeLoader,
       },
       {
         path: "about",
@@ -65,15 +67,27 @@ export const router = createBrowserRouter([
       },
       {
         path: "products",
-        element: <ProductRootLayoutPage />,
+        element: (
+          <Suspense fallback={<SuspenseFallback />}>
+            <ProductRootLayoutPage />
+          </Suspense>
+        ),
         children: [
           {
             index: true,
-            element: <ProductPage />,
+            element: (
+              <Suspense fallback={<SuspenseFallback />}>
+                <ProductPage />
+              </Suspense>
+            ),
           },
           {
             path: ":productId",
-            element: <ProductDetailPage />,
+            element: (
+              <Suspense fallback={<SuspenseFallback />}>
+                <ProductDetailPage />
+              </Suspense>
+            ),
           },
         ],
       },
