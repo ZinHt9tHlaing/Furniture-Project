@@ -23,6 +23,7 @@ import SuspenseFallback from "./components/loading/SuspenseFallback";
 import LoginPage from "./pages/auth/Login";
 import RegisterPage from "./pages/auth/Register";
 import { homeLoader } from "./router/loader/loaderIndex";
+import { loginAction, logoutAction } from "./router/action/actionIndex";
 
 export const router = createBrowserRouter([
   {
@@ -96,9 +97,14 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+    action: loginAction,
   },
   {
     path: "/register",
     element: <RegisterPage />,
+  },
+  {
+    path: "/logout",
+    action: logoutAction,
   },
 ]);

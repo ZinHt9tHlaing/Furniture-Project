@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router";
+import { Link, useSubmit } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
@@ -20,6 +20,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { PasswordInput } from "./PasswordInput";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
   phone: z
@@ -35,6 +36,8 @@ const loginSchema = z.object({
 });
 
 export default function LoginForm() {
+  const submit = useSubmit();
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -44,8 +47,9 @@ export default function LoginForm() {
   });
 
   const onSubmit = (values: z.infer<typeof loginSchema>) => {
-    console.log(values);
-    form.reset();
+    // form.reset();
+    submit(values, { method: "post", action: "/login" });
+    toast.success("Successfully Logged In.");
   };
 
   return (
@@ -118,7 +122,11 @@ export default function LoginForm() {
                 type="submit"
                 className="w-full cursor-pointer duration-200 active:scale-95"
               >
-                Sign In
+                {form.formState.isSubmitting ? (
+                  <p className="animate-pulse">Submitting...</p>
+                ) : (
+                  "Sign In"
+                )}
               </Button>
               <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                 <span className="bg-background text-muted-foreground relative z-10 px-2">
