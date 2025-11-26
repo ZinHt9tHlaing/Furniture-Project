@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  authCheck,
   confirmPassword,
   forgetPassword,
   loginController,
@@ -9,6 +10,7 @@ import {
   verifyOtp,
   verifyOtpForPassword,
 } from "../../../controllers/auth/authController";
+import { authMiddleware } from "../../../middlewares/authMiddleware";
 
 const router = express.Router();
 
@@ -22,7 +24,9 @@ router.post("/forget-password", forgetPassword);
 router.post("/verify-password", verifyOtpForPassword);
 router.post("/reset-password", resetPassword);
 
+router.get("/auth-check", authMiddleware, authCheck);
+
 // Refresh Token api for mobile coz mobile does not have cookie
-// router.post("/refresh-token", setRefreshToken); 
+// router.post("/refresh-token", setRefreshToken);
 
 export default router;

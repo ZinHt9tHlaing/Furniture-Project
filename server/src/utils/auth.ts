@@ -39,6 +39,6 @@ export const checkUserIfNotExist = (user: any) => {
     const error: any = new Error("This phone has not registered.");
     error.status = 401;
     error.code = errorCode.unauthenticated;
-    return error;
+    throw error;
   }
 };

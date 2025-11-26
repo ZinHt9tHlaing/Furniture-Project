@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Link, useSubmit } from "react-router";
+import { Link, useActionData, useNavigation, useSubmit } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
@@ -20,7 +20,6 @@ import {
   FormMessage,
 } from "../ui/form";
 import { PasswordInput } from "./PasswordInput";
-import { toast } from "sonner";
 
 const loginSchema = z.object({
   phone: z
@@ -37,6 +36,13 @@ const loginSchema = z.object({
 
 export default function LoginForm() {
   const submit = useSubmit();
+  const navigation = useNavigation();
+  const actionData = useActionData() as {
+    message?: string;
+    error?: string;
+  };
+
+  const submitting = navigation.state === "submitting";
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -49,7 +55,7 @@ export default function LoginForm() {
   const onSubmit = (values: z.infer<typeof loginSchema>) => {
     // form.reset();
     submit(values, { method: "post", action: "/login" });
-    toast.success("Successfully Logged In.");
+    // toast.success("Successfully Logged In.");
   };
 
   return (
@@ -117,13 +123,21 @@ export default function LoginForm() {
                 </FormItem>
               )}
             />
+            {actionData && (
+              <p className="text-xs font-medium text-red-600">
+                {actionData.message}
+              </p>
+            )}
             <div className="grid gap-4">
               <Button
                 type="submit"
-                className="w-full cursor-pointer duration-200 active:scale-95"
+                className="mt-2 w-full cursor-pointer duration-200 active:scale-95"
               >
-                {form.formState.isSubmitting ? (
-                  <p className="animate-pulse">Submitting...</p>
+                {submitting ? (
+                  <>
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                    <span className="animate-pulse">Submitting...</span>
+                  </>
                 ) : (
                   "Sign In"
                 )}

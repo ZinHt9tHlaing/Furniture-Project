@@ -22,6 +22,10 @@ import jwt from "jsonwebtoken";
 import { errorCode } from "../../config/errorCode";
 import { createError } from "../../utils/error";
 
+interface CustomRequest extends Request {
+  userId?: number;
+}
+
 export const registerController = [
   body("phone", "Invalid phone number")
     .trim()
@@ -376,7 +380,7 @@ export const loginController = [
     // If wrong password 3 times in a day was over limit, user is FREEZE
     if (user?.status === "FREEZE") {
       const error: any = new Error(
-        "Your account is temporarily locked. Please contact uss."
+        "Your account is temporarily locked. Please contact us."
       );
       error.status = 401;
       error.code = errorCode.accountFreeze;
@@ -840,3 +844,22 @@ export const resetPassword = [
       });
   },
 ];
+
+export const authCheck = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = req.userId;
+  const user = await getUserById(userId!);
+  checkUserIfNotExist(user);
+
+  const fullName = `${user?.firstName} ${user?.lastName}`;
+
+  res.status(200).json({
+    message: "You are a authenticated user.",
+    userId: user?.id,
+    username: fullName,
+    image: user?.image,
+  });
+};
