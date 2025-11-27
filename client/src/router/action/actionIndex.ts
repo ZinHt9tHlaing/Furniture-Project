@@ -4,13 +4,25 @@ import { ActionFunctionArgs, redirect } from "react-router";
 
 export const loginAction = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const authData = {
-    phone: formData.get("phone"),
-    password: formData.get("password"),
-  };
+  const credentials = Object.fromEntries(formData);
+  // const authData = {
+  //   phone: formData.get("phone"),
+  //   password: formData.get("password"),
+  // };
+
+  console.log("credentials", credentials);
 
   try {
-    const response = await authApi.post("/login", authData);
+    // const response = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(credentials), // Convert to JSON
+    //   credentials: "include", // send httpOnly cookies
+    // });
+
+    const response = await authApi.post("/login", credentials);
 
     if (response.status !== 200) {
       return { error: response.data || "Login failed!" };

@@ -21,9 +21,12 @@ import ProductPage from "./pages/products/Product";
 import ProductDetailPage from "./pages/products/ProductDetail";
 import SuspenseFallback from "./components/loading/SuspenseFallback";
 import LoginPage from "./pages/auth/Login";
-import RegisterPage from "./pages/auth/Register";
 import { homeLoader, loginLoader } from "./router/loader/loaderIndex";
 import { loginAction, logoutAction } from "./router/action/actionIndex";
+import AuthRootLayout from "./pages/auth/AuthRootLayout";
+import SignUpPage from "./pages/auth/SignUp";
+import OtpPage from "./pages/auth/OtpPage";
+import ConfirmPasswordPage from "./pages/auth/ConfirmPasswordPage";
 
 export const router = createBrowserRouter([
   {
@@ -102,7 +105,21 @@ export const router = createBrowserRouter([
   },
   {
     path: "/register",
-    element: <RegisterPage />,
+    element: <AuthRootLayout />,
+    children: [
+      {
+        index: true,
+        element: <SignUpPage />,
+      },
+      {
+        path: "otp",
+        element: <OtpPage />,
+      },
+      {
+        path: "confirm-password",
+        element: <ConfirmPasswordPage />,
+      },
+    ],
   },
   {
     path: "/logout",
