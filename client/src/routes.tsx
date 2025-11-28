@@ -21,8 +21,19 @@ import ProductPage from "./pages/products/Product";
 import ProductDetailPage from "./pages/products/ProductDetail";
 import SuspenseFallback from "./components/loading/SuspenseFallback";
 import LoginPage from "./pages/auth/Login";
-import { homeLoader, loginLoader } from "./router/loader/loaderIndex";
-import { loginAction, logoutAction } from "./router/action/actionIndex";
+import {
+  confirmPasswordLoader,
+  homeLoader,
+  loginLoader,
+  otpLoader,
+} from "./router/loader/loaderIndex";
+import {
+  confirmPasswordAction,
+  loginAction,
+  logoutAction,
+  otpAction,
+  registerAction,
+} from "./router/action/actionIndex";
 import AuthRootLayout from "./pages/auth/AuthRootLayout";
 import SignUpPage from "./pages/auth/SignUp";
 import OtpPage from "./pages/auth/OtpPage";
@@ -106,18 +117,25 @@ export const router = createBrowserRouter([
   {
     path: "/register",
     element: <AuthRootLayout />,
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
         element: <SignUpPage />,
+        loader: loginLoader,
+        action: registerAction,
       },
       {
         path: "otp",
         element: <OtpPage />,
+        loader: otpLoader,
+        action: otpAction,
       },
       {
         path: "confirm-password",
         element: <ConfirmPasswordPage />,
+        loader: confirmPasswordLoader,
+        action: confirmPasswordAction
       },
     ],
   },

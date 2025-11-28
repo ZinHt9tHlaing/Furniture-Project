@@ -33,6 +33,7 @@ export function SignUpForm({
     message?: string;
     error?: string;
   };
+  console.log(actionData);
 
   const submitting = navigation.state === "submitting";
 
@@ -91,6 +92,7 @@ export function SignUpForm({
                           // minLength={7}
                           // maxLength={12}
                           inputMode="numeric"
+                          className={`${actionData ? "border-red-500" : ""}`}
                           {...field}
                         />
                       </FormControl>

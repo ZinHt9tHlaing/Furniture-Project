@@ -82,7 +82,7 @@ export function InputOTPForm({
                       <InputOTP
                         maxLength={6}
                         {...field}
-                        pattern={REGEXP_ONLY_DIGITS}
+                        pattern={REGEXP_ONLY_DIGITS} // Only allow digits ( number 0-9 )
                       >
                         <InputOTPGroup>
                           <InputOTPSlot index={0} />

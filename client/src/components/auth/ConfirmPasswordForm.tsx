@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Link, useActionData, useNavigation, useSubmit } from "react-router";
@@ -32,6 +33,8 @@ export function ConfirmPasswordForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const [clientError, setClientError] = useState<string | null>(null);
+
   const submit = useSubmit();
   const navigation = useNavigation();
   const actionData = useActionData() as {
@@ -50,6 +53,11 @@ export function ConfirmPasswordForm({
   });
 
   function onSubmit(values: z.infer<typeof FormSchema>) {
+    if (values.password !== values.confirmPassword) {
+      setClientError("Passwords do not match.");
+      return;
+    }
+    setClientError(null);
     submit(values, { method: "post", action: "/register/confirm-password" });
   }
 
@@ -124,16 +132,14 @@ export function ConfirmPasswordForm({
                     </p>
                     <Link
                       to="/register"
-                      className="text-xs underline underline-offset-4"
+                      className="text-xs underline underline-offset-4 duration-300 hover:scale-105"
                     >
                       Go back to register
                     </Link>
                   </div>
                 )}
-                {actionData && (
-                  <p className="text-xs font-medium text-red-600">
-                    {actionData.message}
-                  </p>
+                {clientError && (
+                  <p className="text-xs text-red-400">{clientError}</p>
                 )}
                 <div className="grid gap-4">
                   <Button

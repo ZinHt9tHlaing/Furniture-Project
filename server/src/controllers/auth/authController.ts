@@ -233,7 +233,6 @@ export const confirmPassword = [
     .matches("^[0-9]+$")
     .isLength({ min: 8, max: 8 }),
   body("token", "Invalid token").trim().notEmpty().escape(),
-  body("token", "Invalid token").trim().notEmpty().escape(),
   async (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req).array({ onlyFirstError: true });
     // If validation error occurs
