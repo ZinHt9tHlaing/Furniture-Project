@@ -213,12 +213,13 @@ export const getInfinitePostsByPagination = [
       posts.pop(); // if 6 posts, remove 6 and response 5 posts
     }
 
-    const newCursor = posts.length > 0 ? posts[posts.length - 1].id : null;
+    const nextCursor = posts.length > 0 ? posts[posts.length - 1].id : null;
 
     res.status(200).json({
       message: "Get All infinite posts",
       hasNextPage,
-      newCursor,
+      nextCursor,
+      prevCursor: lastCursor,
       posts,
     });
   },
