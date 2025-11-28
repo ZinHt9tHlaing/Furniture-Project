@@ -39,6 +39,8 @@ export default function CarouselCard({ products }: ProductProps) {
               <img
                 src={imageUrl + product.images[0].path}
                 alt={product.name}
+                loading="lazy"
+                decoding="async"
                 className="h-28 rounded-md"
               />
               <div className="">

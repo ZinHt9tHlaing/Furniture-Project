@@ -1,11 +1,10 @@
 import { Button } from "@/components/ui/button";
 import Couch from "../data/images/couch.png";
 import { Link, useLoaderData } from "react-router";
-import { products } from "@/data/products";
 import BlogCard from "@/components/blogs/BlogCard";
-import { posts } from "@/data/posts";
 import ProductCard from "@/components/products/ProductCard";
-import CarouselCard from '@/components/products/CarouselCard';
+import CarouselCard from "@/components/products/CarouselCard";
+import { Product } from "@/types";
 
 type TitleProps = {
   title: string;
@@ -13,12 +12,12 @@ type TitleProps = {
   sideText?: string;
 };
 
-const samplePosts = posts.slice(0, 3);
-const sampleProducts = products.slice(0, 4);
+// const samplePosts = posts.slice(0, 3);
+// const sampleProducts = products.slice(0, 4);
 
 const Home = () => {
   const { productData, postData } = useLoaderData();
-  console.log("productData", productData);
+  console.log("postData",postData);
 
   // Reusable Component
   const Title = ({ title, href, sideText }: TitleProps) => (
@@ -72,14 +71,14 @@ const Home = () => {
         sideText="View All Products"
       />
       <div className="grid grid-cols-1 gap-6 px-4 md:grid-cols-2 lg:grid-cols-4 lg:px-0">
-        {sampleProducts.map((product) => (
-          <ProductCard key={product.id} product={productData} />
+        {productData.products.slice(0, 4).map((product: Product) => (
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
 
       {/* Recent Blog  */}
       <Title title="Recent Blog" href="/blogs" sideText="View All Posts" />
-      <BlogCard posts={samplePosts} />
+      <BlogCard posts={postData} />
     </div>
   );
 };
