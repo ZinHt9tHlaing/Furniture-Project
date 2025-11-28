@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import Couch from "../data/images/couch.png";
-import { Link } from "react-router";
-import CarouselCard from "@/components/products/CarouselCard";
+import { Link, useLoaderData } from "react-router";
 import { products } from "@/data/products";
 import BlogCard from "@/components/blogs/BlogCard";
 import { posts } from "@/data/posts";
 import ProductCard from "@/components/products/ProductCard";
+import CarouselCard from '@/components/products/CarouselCard';
 
 type TitleProps = {
   title: string;
@@ -17,6 +17,9 @@ const samplePosts = posts.slice(0, 3);
 const sampleProducts = products.slice(0, 4);
 
 const Home = () => {
+  const { productData, postData } = useLoaderData();
+  console.log("productData", productData);
+
   // Reusable Component
   const Title = ({ title, href, sideText }: TitleProps) => (
     <div className="mt-28 mb-10 flex flex-col px-4 md:flex-row md:items-center md:justify-between lg:px-0">
@@ -61,7 +64,7 @@ const Home = () => {
         {/* Image Section */}
         <img src={Couch} alt="Couch" className="w-full lg:w-3/5" />
       </div>
-      <CarouselCard products={products} />
+      <CarouselCard products={productData.products} />
       {/* Featured Products */}
       <Title
         title="Featured Products"
@@ -70,7 +73,7 @@ const Home = () => {
       />
       <div className="grid grid-cols-1 gap-6 px-4 md:grid-cols-2 lg:grid-cols-4 lg:px-0">
         {sampleProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} product={productData} />
         ))}
       </div>
 

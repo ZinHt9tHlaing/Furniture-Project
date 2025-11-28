@@ -4,8 +4,18 @@ import { redirect } from "react-router";
 
 export const homeLoader = async () => {
   try {
-    const res = await api.get("/users/infinite/products");
-    return res.data;
+    const products = await api.get("/users/infinite/products?limit=8");
+    const posts = await api.get("/users/posts/infinite?limit=3");
+
+    // const [products, posts] = await Promise.all([
+    //   api.get("/users/infinite/products?limit=8"),
+    //   api.get("/users/posts/infinite?limit=3"),
+    // ]);
+
+    return {
+      productData: products.data,
+      postData: posts.data,
+    };
   } catch (error) {
     console.log("HomeLoader error: ", error);
   }
