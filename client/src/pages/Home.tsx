@@ -1,10 +1,13 @@
 import { Button } from "@/components/ui/button";
 import Couch from "../data/images/couch.png";
-import { Link, useLoaderData } from "react-router";
+import { Link } from "react-router";
 import BlogCard from "@/components/blogs/BlogCard";
 import ProductCard from "@/components/products/ProductCard";
 import CarouselCard from "@/components/products/CarouselCard";
 import { Product } from "@/types";
+import { useQuery } from "@tanstack/react-query";
+import { postQuery, productQuery } from "@/api/query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type TitleProps = {
   title: string;
@@ -16,8 +19,59 @@ type TitleProps = {
 // const sampleProducts = products.slice(0, 4);
 
 const Home = () => {
-  const { productData, postData } = useLoaderData();
-  console.log("postData",postData);
+  // const { productData, postData } = useLoaderData();
+
+  const {
+    data: productsData,
+    isLoading: isLoadingProduct,
+    isError: isErrorProduct,
+    error: errorProduct,
+    refetch: refetchProduct,
+  } = useQuery(productQuery("?limit=8"));
+
+  const {
+    data: postsData,
+    isLoading: isLoadingPost,
+    isError: isErrorPost,
+    error: errorPost,
+    refetch: refetchPost,
+  } = useQuery(postQuery("?limit=3"));
+
+  console.log("productsData", productsData);
+  console.log("postsData", postsData);
+
+  if (isLoadingProduct && isLoadingPost) {
+    return (
+      <div className="flex flex-col space-y-3">
+        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+    );
+  }
+
+  if (isErrorProduct && isErrorPost) {
+    return (
+      <div className="container mx-auto my-32 flex flex-1 place-content-center">
+        <div className="text-center text-red-400">
+          <p className="mb-4">
+            {errorProduct.message} & {errorPost.message}
+          </p>
+          <Button
+            onClick={() => {
+              refetchProduct();
+              refetchPost();
+            }}
+            variant="secondary"
+          >
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   // Reusable Component
   const Title = ({ title, href, sideText }: TitleProps) => (
@@ -63,7 +117,7 @@ const Home = () => {
         {/* Image Section */}
         <img src={Couch} alt="Couch" className="w-full lg:w-3/5" />
       </div>
-      <CarouselCard products={productData.products} />
+      {productsData && <CarouselCard products={productsData.products} />}
       {/* Featured Products */}
       <Title
         title="Featured Products"
@@ -71,14 +125,17 @@ const Home = () => {
         sideText="View All Products"
       />
       <div className="grid grid-cols-1 gap-6 px-4 md:grid-cols-2 lg:grid-cols-4 lg:px-0">
-        {productData.products.slice(0, 4).map((product: Product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+        {productsData &&
+          productsData.products
+            .slice(0, 4)
+            .map((product: Product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
       </div>
 
       {/* Recent Blog  */}
       <Title title="Recent Blog" href="/blogs" sideText="View All Posts" />
-      <BlogCard posts={postData} />
+      {postsData && <BlogCard posts={postsData} />}
     </div>
   );
 };
