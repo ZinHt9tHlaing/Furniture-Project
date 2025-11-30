@@ -23,6 +23,7 @@ import SuspenseFallback from "./components/loading/SuspenseFallback";
 import LoginPage from "./pages/auth/Login";
 import {
   confirmPasswordLoader,
+  homeLoader,
   loginLoader,
   otpLoader,
 } from "./router/loader/loaderIndex";
@@ -47,7 +48,7 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <HomePage />,
-        // loader: homeLoader,
+        loader: homeLoader,
       },
       {
         path: "about",

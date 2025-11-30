@@ -5,9 +5,8 @@ import BlogCard from "@/components/blogs/BlogCard";
 import ProductCard from "@/components/products/ProductCard";
 import CarouselCard from "@/components/products/CarouselCard";
 import { Product } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { postQuery, productQuery } from "@/api/query";
-import { Skeleton } from "@/components/ui/skeleton";
 
 type TitleProps = {
   title: string;
@@ -21,57 +20,57 @@ type TitleProps = {
 const Home = () => {
   // const { productData, postData } = useLoaderData();
 
-  const {
-    data: productsData,
-    isLoading: isLoadingProduct,
-    isError: isErrorProduct,
-    error: errorProduct,
-    refetch: refetchProduct,
-  } = useQuery(productQuery("?limit=8"));
+  // const {
+  //   data: productsData,
+  //   isLoading: isLoadingProduct,
+  //   isError: isErrorProduct,
+  //   error: errorProduct,
+  //   refetch: refetchProduct,
+  // } = useQuery(productQuery("?limit=8"));
 
-  const {
-    data: postsData,
-    isLoading: isLoadingPost,
-    isError: isErrorPost,
-    error: errorPost,
-    refetch: refetchPost,
-  } = useQuery(postQuery("?limit=3"));
+  // const {
+  //   data: postsData,
+  //   isLoading: isLoadingPost,
+  //   isError: isErrorPost,
+  //   error: errorPost,
+  //   refetch: refetchPost,
+  // } = useQuery(postQuery("?limit=3"));
 
-  console.log("productsData", productsData);
-  console.log("postsData", postsData);
+  // if (isLoadingProduct && isLoadingPost) {
+  //   return (
+  //     <div className="flex flex-col space-y-3">
+  //       <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+  //       <div className="space-y-2">
+  //         <Skeleton className="h-4 w-[250px]" />
+  //         <Skeleton className="h-4 w-[200px]" />
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
-  if (isLoadingProduct && isLoadingPost) {
-    return (
-      <div className="flex flex-col space-y-3">
-        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-[250px]" />
-          <Skeleton className="h-4 w-[200px]" />
-        </div>
-      </div>
-    );
-  }
+  // if (isErrorProduct && isErrorPost) {
+  //   return (
+  //     <div className="container mx-auto my-32 flex flex-1 place-content-center">
+  //       <div className="text-center text-red-400">
+  //         <p className="mb-4">
+  //           {errorProduct.message} & {errorPost.message}
+  //         </p>
+  //         <Button
+  //           onClick={() => {
+  //             refetchProduct();
+  //             refetchPost();
+  //           }}
+  //           variant="secondary"
+  //         >
+  //           Retry
+  //         </Button>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
-  if (isErrorProduct && isErrorPost) {
-    return (
-      <div className="container mx-auto my-32 flex flex-1 place-content-center">
-        <div className="text-center text-red-400">
-          <p className="mb-4">
-            {errorProduct.message} & {errorPost.message}
-          </p>
-          <Button
-            onClick={() => {
-              refetchProduct();
-              refetchPost();
-            }}
-            variant="secondary"
-          >
-            Retry
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  const { data: productsData } = useSuspenseQuery(productQuery("?limit=8"));
+  const { data: postsData } = useSuspenseQuery(postQuery("?limit=3"));
 
   // Reusable Component
   const Title = ({ title, href, sideText }: TitleProps) => (
