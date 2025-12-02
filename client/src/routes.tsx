@@ -22,6 +22,7 @@ import ProductDetailPage from "./pages/products/ProductDetail";
 import SuspenseFallback from "./components/loading/SuspenseFallback";
 import LoginPage from "./pages/auth/Login";
 import {
+  blogInfiniteLoader,
   confirmPasswordLoader,
   homeLoader,
   loginLoader,
@@ -69,6 +70,7 @@ export const router = createBrowserRouter([
                 <BlogPage />
               </Suspense>
             ),
+            loader: blogInfiniteLoader,
           },
           {
             path: ":postId",

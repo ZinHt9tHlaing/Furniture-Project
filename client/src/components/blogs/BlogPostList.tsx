@@ -5,6 +5,8 @@ interface PostProps {
   posts: Post[];
 }
 
+const imageUrl = import.meta.env.VITE_IMG_URL;
+
 const BlogPostList = ({ posts }: PostProps) => {
   return (
     <div className="my-8 grid grid-cols-1 gap-16 px-4 md:grid-cols-2 md:px-0 lg:grid-cols-3">
@@ -12,7 +14,7 @@ const BlogPostList = ({ posts }: PostProps) => {
         <div className="flex-col">
           <Link to={`/blogs/${post.id}`} key={post.id}>
             <img
-              src={post.image}
+              src={imageUrl + post.image}
               alt={post.title}
               loading="lazy"
               decoding="async"
@@ -25,8 +27,8 @@ const BlogPostList = ({ posts }: PostProps) => {
           </h3>
           <div className="text-sm">
             <span>
-              by<span className="font-[600]"> {post.author} </span>on
-              <span className="font-[600]"> {post.updated_at}</span>
+              by<span className="font-[600]"> {post.author.fullName} </span>on
+              <span className="font-[600]"> {post.updatedAt}</span>
             </span>
           </div>
         </div>

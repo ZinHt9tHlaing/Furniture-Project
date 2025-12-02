@@ -105,9 +105,8 @@ export const getPostsByPagination = [
 
     // pagination skip formula
     const skip = (page - 1) * limit;
-    // ( 1 - 1 ) * 5 => 1 ကနေ စယူ
-    // ( 2 - 1 ) * 5 => 6 ကနေ စယူ
-    // ( 3 - 1 ) * 5 => 11 ကနေ စယူ
+    // ( 1 - 1 ) * 5 => page 1မှာ 0ကို skipပီး 1 ကနေ စယူ
+    // ( 2 - 1 ) * 5 => page 2မှာ 1 - 5ကို skipပီး 6 ကနေ စယူ
 
     const options = {
       skip,
