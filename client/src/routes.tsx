@@ -27,6 +27,7 @@ import {
   homeLoader,
   loginLoader,
   otpLoader,
+  postDetailLoader,
 } from "./router/loader/loaderIndex";
 import {
   confirmPasswordAction,
@@ -79,6 +80,7 @@ export const router = createBrowserRouter([
                 <BlogDetailPage />
               </Suspense>
             ),
+            loader: postDetailLoader,
           },
         ],
       },
