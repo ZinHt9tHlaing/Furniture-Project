@@ -7,8 +7,10 @@ import { checkUserIfNotExist } from "../../utils/auth";
 
 import { getOrSetCache } from "../../utils/cache";
 import {
+  getCategoryList,
   getProductsList,
   getProductWithRelations,
+  getTypeList,
 } from "../../services/productService";
 import { checkModelIfExist } from "../../utils/check";
 
@@ -144,3 +146,24 @@ export const getProductsByPagination = [
     });
   },
 ];
+
+export const getCategoryType = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = req.userId;
+  const user = await getUserById(userId!);
+  checkUserIfNotExist(user);
+
+  const [categories, types] = await Promise.all([
+    getCategoryList(),
+    getTypeList(),
+  ]);
+
+  res.status(200).json({
+    message: "Get All Categories and Types",
+    categories,
+    types,
+  });
+};

@@ -130,3 +130,12 @@ export const getProductWithRelations = async (id: number) => {
 export const getProductsList = async (options: any) => {
   return await prisma.product.findMany(options);
 };
+
+export const getCategoryList = async () => {
+  return await prisma.category.findMany();
+};
+
+
+export const getTypeList = async () => {
+  return await prisma.type.findMany();
+};
