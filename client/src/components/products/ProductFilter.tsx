@@ -70,6 +70,7 @@ export default function ProductFilter({ filterList }: FilterListProps) {
                       >
                         <FormControl>
                           <Checkbox
+                            className="cursor-pointer"
                             checked={field.value?.includes(category.id)}
                             onCheckedChange={(checked) => {
                               return checked
