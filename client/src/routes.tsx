@@ -28,6 +28,7 @@ import {
   loginLoader,
   otpLoader,
   postDetailLoader,
+  productInfiniteLoader,
 } from "./router/loader/loaderIndex";
 import {
   confirmPasswordAction,
@@ -99,6 +100,7 @@ export const router = createBrowserRouter([
                 <ProductPage />
               </Suspense>
             ),
+            loader: productInfiniteLoader,
           },
           {
             path: ":productId",
