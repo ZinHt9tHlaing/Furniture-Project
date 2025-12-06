@@ -15,10 +15,12 @@ import {
 import { Category } from "@/types";
 
 interface FilterListProps {
-  filterList: {
-    categories: Category[];
-    types: Category[];
-  };
+  categories: Category[];
+  types: Category[];
+}
+
+interface ProductFilterProps {
+  filterList: FilterListProps;
 }
 
 const FormSchema = z.object({
@@ -32,7 +34,7 @@ const FormSchema = z.object({
   }),
 });
 
-export default function ProductFilter({ filterList }: FilterListProps) {
+export default function ProductFilter({ filterList }: ProductFilterProps) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -71,20 +73,23 @@ export default function ProductFilter({ filterList }: FilterListProps) {
                         <FormControl>
                           <Checkbox
                             className="cursor-pointer"
-                            checked={field.value?.includes(category.id)}
+                            checked={field.value?.includes(
+                              category.id.toString(),
+                            )}
                             onCheckedChange={(checked) => {
                               return checked
                                 ? field.onChange([...field.value, category.id])
                                 : field.onChange(
                                     field.value?.filter(
-                                      (value) => value !== category.id,
+                                      (value) =>
+                                        value !== category.id.toString(),
                                     ),
                                   );
                             }}
                           />
                         </FormControl>
                         <FormLabel className="text-sm font-normal">
-                          {category.label}
+                          {category.name}
                         </FormLabel>
                       </FormItem>
                     );
@@ -118,20 +123,20 @@ export default function ProductFilter({ filterList }: FilterListProps) {
                       >
                         <FormControl>
                           <Checkbox
-                            checked={field.value?.includes(type.id)}
+                            checked={field.value?.includes(type.id.toString())}
                             onCheckedChange={(checked) => {
                               return checked
                                 ? field.onChange([...field.value, type.id])
                                 : field.onChange(
                                     field.value?.filter(
-                                      (value) => value !== type.id,
+                                      (value) => value !== type.id.toString(),
                                     ),
                                   );
                             }}
                           />
                         </FormControl>
                         <FormLabel className="text-sm font-normal">
-                          {type.label}
+                          {type.name}
                         </FormLabel>
                       </FormItem>
                     );

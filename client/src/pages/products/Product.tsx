@@ -1,11 +1,39 @@
+import { useSearchParams } from "react-router";
+import { useInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
+
 import ProductCard from "@/components/products/ProductCard";
 import ProductFilter from "@/components/products/ProductFilter";
-import { useInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { categoryTypeQuery, productInfiniteQuery } from "@/api/query";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Product = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const rawCategory = searchParams.get("categories"); // encoded "1,2"
+  const rawType = searchParams.get("types"); // encoded "1,3"
+
+  // Decode, parse search params and validation
+  const selectedCategory = rawCategory
+    ? decodeURIComponent(rawCategory)
+        .split(",")
+        .map((cat) => Number(cat.trim())) // convert string to number and remove whitespace
+        .filter((cat) => !isNaN(cat)) // remove not a number
+        .map((cat) => cat.toString())
+    : []; // decoded "1,2 a b" ==> ["1", "2"]
+
+  const selectedType = rawType
+    ? decodeURIComponent(rawType)
+        .split(",")
+        .map((type) => Number(type.trim()))
+        .filter((type) => !isNaN(type))
+        .map((type) => type.toString())
+    : [];
+
+  const cat = selectedCategory.length > 0 ? selectedCategory.join(",") : null; // array to string
+
+  const type = selectedType.length > 0 ? selectedType.join(",") : null;
+
   const { data: cateTypeData } = useSuspenseQuery(categoryTypeQuery());
   const {
     status,
@@ -18,7 +46,7 @@ const Product = () => {
     // fetchPreviousPage,
     hasNextPage,
     // hasPreviousPage,
-  } = useInfiniteQuery(productInfiniteQuery());
+  } = useInfiniteQuery(productInfiniteQuery(cat, type));
 
   const allProducts = data?.pages.flatMap((page) => page.products) ?? [];
 
