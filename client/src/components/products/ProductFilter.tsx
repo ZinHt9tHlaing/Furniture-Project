@@ -21,30 +21,39 @@ interface FilterListProps {
 
 interface ProductFilterProps {
   filterList: FilterListProps;
+  selectedCategory: string[];
+  selectedType: string[];
+  onFilterChange: (category: string[], type: string[]) => void;
 }
 
 const FormSchema = z.object({
-  categories: z
-    .array(z.string())
-    .refine((value) => value.some((item) => item), {
-      message: "You have to select at least one category.",
-    }),
-  types: z.array(z.string()).refine((value) => value.some((item) => item), {
-    message: "You have to select at least one type.",
-  }),
+  categories: z.array(z.string()),
+  // .refine((value) => value.some((item) => item), {
+  //   message: "You have to select at least one category.",
+  // }),
+  types: z.array(z.string()),
+  //   .refine((value) => value.some((item) => item), {
+  //   message: "You have to select at least one type.",
+  // }),
 });
 
-export default function ProductFilter({ filterList }: ProductFilterProps) {
+export default function ProductFilter({
+  filterList,
+  selectedCategory,
+  selectedType,
+  onFilterChange,
+}: ProductFilterProps) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      categories: [],
-      types: [],
+      categories: selectedCategory,
+      types: selectedType,
     },
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log("Submit data", data);
+    onFilterChange(data.categories, data.types);
   }
 
   return (
@@ -59,37 +68,36 @@ export default function ProductFilter({ filterList }: ProductFilterProps) {
               <div className="mb-4">
                 <FormLabel className="text-base">Furniture Made By</FormLabel>
               </div>
-              {filterList.categories.map((category) => (
+              {filterList.categories.map((item) => (
                 <FormField
-                  key={category.id}
+                  key={item.id}
                   control={form.control}
                   name="categories"
                   render={({ field }) => {
                     return (
                       <FormItem
-                        key={category.id}
-                        className="flex flex-row items-center gap-2"
+                        key={item.id}
+                        className="flex flex-row items-start space-y-0 space-x-3"
                       >
                         <FormControl>
                           <Checkbox
-                            className="cursor-pointer"
-                            checked={field.value?.includes(
-                              category.id.toString(),
-                            )}
+                            checked={field.value?.includes(item.id.toString())}
                             onCheckedChange={(checked) => {
                               return checked
-                                ? field.onChange([...field.value, category.id])
+                                ? field.onChange([
+                                    ...field.value,
+                                    item.id.toString(),
+                                  ])
                                 : field.onChange(
                                     field.value?.filter(
-                                      (value) =>
-                                        value !== category.id.toString(),
+                                      (value) => value !== item.id.toString(),
                                     ),
                                   );
                             }}
                           />
                         </FormControl>
                         <FormLabel className="text-sm font-normal">
-                          {category.name}
+                          {item.name}
                         </FormLabel>
                       </FormItem>
                     );
@@ -110,33 +118,36 @@ export default function ProductFilter({ filterList }: ProductFilterProps) {
               <div className="mb-4">
                 <FormLabel className="text-base">Furniture Types</FormLabel>
               </div>
-              {filterList.types.map((type) => (
+              {filterList.types.map((item) => (
                 <FormField
-                  key={type.id}
+                  key={item.id}
                   control={form.control}
                   name="types"
                   render={({ field }) => {
                     return (
                       <FormItem
-                        key={type.id}
-                        className="flex flex-row items-center gap-2"
+                        key={item.id}
+                        className="flex flex-row items-start space-y-0 space-x-3"
                       >
                         <FormControl>
                           <Checkbox
-                            checked={field.value?.includes(type.id.toString())}
+                            checked={field.value?.includes(item.id.toString())}
                             onCheckedChange={(checked) => {
                               return checked
-                                ? field.onChange([...field.value, type.id])
+                                ? field.onChange([
+                                    ...field.value,
+                                    item.id.toString(),
+                                  ])
                                 : field.onChange(
                                     field.value?.filter(
-                                      (value) => value !== type.id.toString(),
+                                      (value) => value !== item.id.toString(),
                                     ),
                                   );
                             }}
                           />
                         </FormControl>
                         <FormLabel className="text-sm font-normal">
-                          {type.name}
+                          {item.name}
                         </FormLabel>
                       </FormItem>
                     );

@@ -3,7 +3,11 @@ import { useInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
 
 import ProductCard from "@/components/products/ProductCard";
 import ProductFilter from "@/components/products/ProductFilter";
-import { categoryTypeQuery, productInfiniteQuery } from "@/api/query";
+import {
+  categoryTypeQuery,
+  productInfiniteQuery,
+  queryClient,
+} from "@/api/query";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -28,7 +32,7 @@ const Product = () => {
         .map((type) => Number(type.trim()))
         .filter((type) => !isNaN(type))
         .map((type) => type.toString())
-    : [];
+    : []; // return string array
 
   const cat = selectedCategory.length > 0 ? selectedCategory.join(",") : null; // array to string
 
@@ -46,9 +50,31 @@ const Product = () => {
     // fetchPreviousPage,
     hasNextPage,
     // hasPreviousPage,
+    refetch,
   } = useInfiniteQuery(productInfiniteQuery(cat, type));
 
   const allProducts = data?.pages.flatMap((page) => page.products) ?? [];
+
+  const handleFilterChange = (categories: string[], types: string[]) => {
+    const newParams = new URLSearchParams();
+    if (categories.length > 0) {
+      newParams.set("categories", encodeURIComponent(categories.join(","))); // encoded and array to string
+    }
+    if (types.length > 0) {
+      newParams.set("types", encodeURIComponent(types.join(",")));
+    }
+
+    // Updates URL & triggers refetch via query key
+    setSearchParams(newParams);
+
+    // Cancel In-flight queries
+    queryClient.cancelQueries({ queryKey: ["products", "infinite"] });
+
+    // Clear cache
+    queryClient.removeQueries({ queryKey: ["products", "infinite"] });
+
+    refetch();
+  };
 
   if (status === "pending") {
     return (
@@ -70,7 +96,12 @@ const Product = () => {
     <div className="container mx-auto">
       <section className="flex flex-col lg:flex-row">
         <section className="my-8 ml-4 w-full lg:ml-0 lg:w-1/5">
-          <ProductFilter filterList={cateTypeData} />
+          <ProductFilter
+            filterList={cateTypeData}
+            selectedCategory={selectedCategory}
+            selectedType={selectedType}
+            onFilterChange={handleFilterChange}
+          />
         </section>
         <section className="w-full lg:ml-0 lg:w-4/5">
           <h1 className="my-8 ml-4 text-2xl font-bold">All Products</h1>
